@@ -1,0 +1,10 @@
+{
+  "name": "cursor-alignment",
+  "version": "0.3.0",
+  "title": "Cursor Alignment",
+  "author": "gabrsar",
+  "homepage": "https://github.com/gabrsar/factorio-cursor-alignment",
+  "factorio_version": "2.1",
+  "dependencies": ["base >= 2.1.0"],
+  "description": "Translucent row and column alignment guides with a per-player configuration panel, color mixing and 10 languages. Factorio 2.1. Ctrl+Shift+O opens settings."
+}

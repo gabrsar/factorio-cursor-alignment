@@ -1,0 +1,23 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 2026-09-30
+  Features:
+    - Added a per-player configuration panel, opened with Ctrl+Shift+O or the top button.
+    - Added RGB, opacity, additive mixing, contextual/manual/always visibility and grid-only options.
+    - Added ten UI languages and an industrial grid thumbnail.
+  Bugfixes:
+    - Hover activation now snaps the key event's cursor position to a tile, including negative coordinates.
+  Info:
+    - Held Shift and continuous grid snapping for selection/copy tools remain unavailable through the public API.
+---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 2026-09-30
+  Features:
+    - Replaced thin lines with translucent one-tile-wide bands.
+    - Added snapped build-cursor guides for ordinary entities and even-size correction.
+    - Hover guides require Ctrl+Shift+S and disappear when leaving the entity.
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 2026-09-30
+  Features:
+    - Initial horizontal and vertical cursor guides for Factorio 2.1.
