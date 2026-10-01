@@ -4,7 +4,23 @@ local panel = require("panel")
 local function state_for(index)
   storage.players = storage.players or {}
   storage.players[index] = storage.players[index] or {muted = false}
-  return storage.players[index]
+  local state = storage.players[index]
+  state.anchors = state.anchors or {}
+  if state.anchor then
+    local surface = state.surface or tonumber((state.anchor.cursor_key or ""):match("^(%d+):"))
+    if surface then
+      local p = state.anchor.position
+      state.anchors[surface .. ":" .. p.x .. ":" .. p.y] = {position=p, surface_index=surface}
+    end
+    state.anchor = nil
+  end
+  if state.hover_position and state.hover_entity and state.hover_entity.valid then
+    local p = state.hover_position
+    local surface = state.hover_entity.surface.index
+    state.anchors[surface .. ":" .. p.x .. ":" .. p.y] = {position=p, surface_index=surface}
+  end
+  state.hover_entity = nil; state.hover_position = nil
+  return state
 end
 
 local function clear(state)
@@ -47,19 +63,7 @@ local function grid_center(position)
   return {x = math.floor(position.x) + 0.5, y = math.floor(position.y) + 0.5}
 end
 
-local function cursor_key(player)
-  local stack = player.cursor_stack
-  local ghost = ghost_prototype(player)
-  return tostring(player.surface.index) .. ":" ..
-    (stack and stack.valid_for_read and stack.name or
-      ghost and ghost.name or "empty")
-end
-
 local function guide_for(player, state)
-  if state.anchor then
-    local p = state.anchor.position
-    return {kind = "position", position = p, key = "anchor:" .. p.x .. ":" .. p.y}
-  end
   local stack = player.cursor_stack
   local item = stack and stack.valid_for_read and stack.prototype
   if not item then item = ghost_prototype(player) end
@@ -72,44 +76,20 @@ local function guide_for(player, state)
     return {kind = "build-cursor", x = entity.tile_width % 2 == 0 and 0.5 or 0,
       y = entity.tile_height % 2 == 0 and 0.5 or 0, key = "build:" .. entity.name}
   end
-  if not has_build_cursor(player) and state.hover_entity
-    and state.hover_entity == player.selected and player.selected.valid then
-    local p = state.hover_position or grid_center(player.selected.position)
-    return {kind = "position", position = p, key = "selected:" .. p.x .. ":" .. p.y}
-  end
   -- No continuous mouse-coordinate API exists for selection tools/blueprints.
   -- These bands still follow the free cursor; they are not tile-snapped.
   return {kind = "cursor", key = "free"}
 end
 
-local function update(player, rebuild)
-  local state = state_for(player.index)
-  if state.anchor and state.anchor.cursor_key ~= cursor_key(player) then state.anchor = nil end
-  if state.hover_entity and (not state.hover_entity.valid or state.hover_entity ~= player.selected) then
-    state.hover_entity = nil
-    state.hover_position = nil
-  end
+local function draw_guide(player, state, guide, rebuild, surface)
   local prefs = settings.get_player_settings(player)
-  local mode = prefs["cursor-alignment-mode"].value
-  local contextual = state.anchor ~= nil or state.hover_entity ~= nil or has_build_cursor(player)
-  local visible = prefs["cursor-alignment-enabled"].value and not state.muted
-    and (mode == "always" or prefs["cursor-alignment-always"].value
-      or (mode == "manual" and state.manual_active)
-      or (mode == "auto" and contextual))
-  if not visible then clear(state); return end
-
-  local guide = guide_for(player, state)
-  if guide.kind == "cursor" and prefs["cursor-alignment-grid-only"].value then clear(state); return end
-  if rebuild or state.surface ~= player.surface.index or state.guide_key ~= guide.key then clear(state) end
+  if rebuild or state.surface ~= surface.index or state.guide_key ~= guide.key then clear(state) end
   if state.lines then
     local valid = true
-    for _, object in pairs(state.lines) do
-      if not object.valid then valid = false; break end
-    end
+    for _, object in pairs(state.lines) do if not object.valid then valid = false; break end end
     if valid then return end
     clear(state)
   end
-
   local length = prefs["cursor-alignment-length"].value
   local tint = prefs["cursor-alignment-color"].value
   local alpha = (tint.a or 1) * prefs["cursor-alignment-fill"].value / 100
@@ -130,19 +110,58 @@ local function update(player, rebuild)
       color = color, width = width,
       from = target(-axis[1], -axis[2]),
       to = target(axis[1], axis[2]),
-      surface = player.surface,
+      surface = surface,
       players = {player.index},
       draw_on_ground = false,
       render_mode = guide.kind == "build-cursor" and "build-cursor" or "game"
     }
   end
-  state.surface = player.surface.index
+  state.surface = surface.index
   state.guide_key = guide.key
+end
+
+local function update(player, rebuild)
+  local state = state_for(player.index)
+  local prefs = settings.get_player_settings(player)
+  local mode = prefs["cursor-alignment-mode"].value
+  local pins_visible = prefs["cursor-alignment-enabled"].value and not state.muted
+    and (mode ~= "manual" or state.manual_active or prefs["cursor-alignment-always"].value)
+  for key, anchor in pairs(state.anchors) do
+    local surface = game.surfaces[anchor.surface_index]
+    if not surface then clear(anchor); state.anchors[key] = nil
+    elseif pins_visible and surface.index == player.surface.index then
+      draw_guide(player, anchor, {kind="position", position=anchor.position, key=key}, rebuild, surface)
+    else clear(anchor) end
+  end
+  local contextual = has_build_cursor(player)
+  local visible = prefs["cursor-alignment-enabled"].value and not state.muted
+    and (mode == "always" or prefs["cursor-alignment-always"].value
+      or (mode == "manual" and state.manual_active)
+      or (mode == "auto" and contextual))
+  if not visible then clear(state); return end
+
+  local guide = guide_for(player, state)
+  if guide.kind == "cursor" and prefs["cursor-alignment-grid-only"].value then clear(state); return end
+  if rebuild or state.surface ~= player.surface.index or state.guide_key ~= guide.key then clear(state) end
+  if state.lines then
+    local valid = true
+    for _, object in pairs(state.lines) do
+      if not object.valid then valid = false; break end
+    end
+    if valid then return end
+    clear(state)
+  end
+
+  draw_guide(player, state, guide, rebuild, player.surface)
 end
 
 local function initialize()
   storage.players = storage.players or {}
-  for _, state in pairs(storage.players) do clear(state) end
+  for index in pairs(storage.players) do
+    local state = state_for(index)
+    clear(state)
+    for _, anchor in pairs(state.anchors) do clear(anchor) end
+  end
   for _, player in pairs(game.connected_players) do panel.ensure_button(player); update(player) end
 end
 
@@ -159,9 +178,6 @@ script.on_event({
 }, function(event)
   local player = game.get_player(event.player_index)
   if player then
-    if event.name == defines.events.on_player_changed_surface then
-      state_for(player.index).anchor = nil
-    end
     panel.ensure_button(player); update(player)
   end
 end)
@@ -204,21 +220,16 @@ end)
 
 local function toggle_hover(player, cursor_position)
   local state = state_for(player.index)
-  if has_build_cursor(player) or not player.selected then
-    if state.anchor then state.anchor = nil
-    elseif cursor_position then
-      state.anchor = {position = grid_center(cursor_position), cursor_key = cursor_key(player)}
-    end
-    state.hover_entity = nil; state.hover_position = nil
-  elseif state.hover_entity == player.selected then
-    state.hover_entity = nil; state.hover_position = nil
-  else
-    state.hover_entity = player.selected
-    state.hover_position = cursor_position and grid_center(cursor_position) or nil
-  end
+  local position = cursor_position or (player.selected and player.selected.valid and player.selected.position)
+  if not position then return end
+  local p = grid_center(position)
+  local surface = player.surface.index
+  local key = surface .. ":" .. p.x .. ":" .. p.y
+  if state.anchors[key] then clear(state.anchors[key]); state.anchors[key] = nil
+  else state.anchors[key] = {position=p, surface_index=surface} end
   state.muted = false
   if settings.get_player_settings(player)["cursor-alignment-mode"].value == "manual" then
-    state.manual_active = state.anchor ~= nil or state.hover_entity ~= nil
+    state.manual_active = true
   end
   update(player)
 end
@@ -244,7 +255,6 @@ script.on_event(defines.events.on_gui_click, function(event)
   if result == "reset" then
     local state = state_for(player.index)
     state.muted = false; state.manual_active = false
-    state.anchor = nil; state.hover_entity = nil; state.hover_position = nil
   end
   if result then update(player, true) end
 end)
@@ -259,7 +269,10 @@ end)
 
 script.on_event({defines.events.on_player_left_game, defines.events.on_player_removed}, function(event)
   local state = storage.players and storage.players[event.player_index]
-  if state then clear(state) end
+  if state then
+    clear(state)
+    for _, anchor in pairs(state.anchors or {}) do clear(anchor) end
+  end
   if event.name == defines.events.on_player_removed and storage.players then
     storage.players[event.player_index] = nil
   end

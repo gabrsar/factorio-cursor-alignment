@@ -22,12 +22,12 @@ Normal blending adds a transparent tint. Increasing additive mix retains more ba
 
 Languages: English, Brazilian Portuguese, Spanish, French, German, Italian, Russian, Simplified Chinese, Japanese and Korean. Translation keys are validated; native-speaker improvements are welcome.
 
-With a build/copy/selection tool in hand, **Ctrl+Shift+S** fixes the guides on the cursor tile. Press again to resume cursor following. The reference is released when the tool or surface changes. With an empty hand, the same key highlights the selected entity; over empty ground it fixes a tile reference.
+**Ctrl+Shift+S** adds or removes a fixed reference on the cursor tile. You can keep multiple references. Each stays until you press the shortcut again on its own tile and surface. References survive tool changes, deselection, surface travel and saving/loading. Visibility toggles hide them temporarily; resetting appearance does not delete them. Live cursor guides remain available alongside the fixed references.
 
 ## API limitations
 
 - Ordinary buildable entities use the game's snapped build cursor. Even-sized entities receive a half-tile correction to cover a full tile.
-- Hover activation snaps the cursor position from the key event to a tile, including negative coordinates. It does not track the cursor inside a large selected entity after activation.
+- Fixed references snap the key event cursor position to a tile, including negative coordinates. They stay at that position.
 - Copy/selection tools, blueprints, tile painting and off-grid/diagonal entities still follow the free cursor. Factorio exposes a local render target, not continuously readable mouse coordinates; Lua cannot apply floor or modulo to that target. **Continuous grid stepping for these tools is not implemented.** Grid-only mode hides unsnapped bands.
 - **Hold Shift modes are not implemented.** Factorio 2.1 exposes key activation, but neither key release nor held-key state. Manual mode is a toggle, not a hold detector.
 
@@ -64,6 +64,6 @@ Tests use temporary maps in `work/`, never user saves. They cover engine loading
 
 ## Português
 
-Com uma ferramenta na mão, **Ctrl+Shift+S** fixa uma referência na grade; pressione novamente para liberar. A referência é fixa, sem acompanhamento contínuo. Abra o painel pelo botão no canto superior esquerdo ou **Ctrl+Shift+O**. Ajuste cor, opacidade, mistura aditiva e alcance. **Ctrl+Shift+H** alterna as guias e **Ctrl+Shift+S** destaca a entidade sob o cursor. O modo manual usa alternância: segurar Shift e encaixe contínuo ao copiar/selecionar ainda não são suportados pela API.
+**Ctrl+Shift+S** adiciona/remove uma referência no tile do cursor. Você pode manter várias e remover cada uma no próprio tile. A referência é fixa, sem acompanhamento contínuo. Abra o painel pelo botão no canto superior esquerdo ou **Ctrl+Shift+O**. Ajuste cor, opacidade, mistura aditiva e alcance. **Ctrl+Shift+H** alterna as guias e **Ctrl+Shift+S** destaca a entidade sob o cursor. O modo manual usa alternância: segurar Shift e encaixe contínuo ao copiar/selecionar ainda não são suportados pela API.
 
 MIT license. See [asset provenance](ASSETS.md) for the icon.

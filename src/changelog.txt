@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.0
+Date: 2026-10-01
+  Features:
+    - Ctrl+Shift+S toggles independent fixed references on the cursor tile.
+    - Multiple references persist across tool changes, deselection and surface travel.
+    - Toggle a reference on its own tile and surface to remove it; appearance reset preserves references.
+    - Live cursor guides can coexist with fixed references.
+  Info:
+    - Existing references are migrated to persistent references on upgrade.
+---------------------------------------------------------------------------------------------------
 Version: 0.4.1
 Date: 2026-10-01
   Bugfixes:

@@ -8,28 +8,26 @@ script.on_init(function()
   player.teleport = function(_, surface) player.surface = surface end
   update(player)
   assert(not state_for(player.index).lines, "Empty hand should hide guides")
-  player.selected = {valid = true, position = {x = -2.2, y = 3.8}}
+  local state = state_for(player.index)
+  toggle_hover(player, {x=-0.01,y=3.99})
+  toggle_hover(player, {x=7.1,y=9.9})
+  assert(state.anchors["1:-0.5:3.5"] and state.anchors["1:7.5:9.5"], "Multiple references")
+  assert(state.anchors["1:-0.5:3.5"].lines[1].width == 32)
+  local old_id = state.anchors["1:7.5:9.5"].lines[1].id
   update(player)
-  assert(not state_for(player.index).lines, "Hover must not automatically show guides")
-  toggle_hover(player)
-  assert(state_for(player.index).lines, "Selected entity should show guides")
-  assert(state_for(player.index).lines[1].width == 32)
-  assert(guide_for(player, state_for(player.index)).position.x == -2.5)
-  local color = state_for(player.index).lines[1].color
-  assert(color.a < 0.2 and color.g <= color.a and color.b <= color.a, "Premultiplied translucent fill")
-  toggle_hover(player)
-  assert(not state_for(player.index).lines, "Hover shortcut should toggle off")
-  toggle_hover(player)
-  player.selected = nil
+  assert(state.anchors["1:7.5:9.5"].lines[1].id == old_id)
+  player.selected = {valid=true, position={x=99,y=99}}
   update(player)
-  assert(not state_for(player.index).lines, "Deselection should hide guides")
-  player.selected = {valid = true, position = {x = -2.2, y = 3.8}}
-  update(player)
-  assert(not state_for(player.index).lines, "Returning to entity must require shortcut again")
-  toggle_hover(player, {x = -0.01, y = 7.99})
-  local exact = guide_for(player, state_for(player.index)).position
-  assert(exact.x == -0.5 and exact.y == 7.5, "Hover input must floor the cursor tile, including negatives")
-  toggle_hover(player)
+  assert(state.anchors["1:-0.5:3.5"], "Selection change must preserve references")
+  toggle_hover(player, {x=-0.9,y=3.1})
+  assert(not state.anchors["1:-0.5:3.5"] and state.anchors["1:7.5:9.5"], "Remove only the same tile")
+  toggle_hover(player, {x=7.9,y=9.1})
+  assert(not next(state.anchors))
+  state.anchor = {position={x=1.5,y=2.5},cursor_key="1:empty"}
+  state_for(player.index)
+  assert(state.anchors["1:1.5:2.5"] and not state.anchor, "Upgrade must migrate the old fixed reference")
+  toggle_hover(player,{x=1.1,y=2.1})
+  assert(not next(state.anchors))
   player.selected = nil
   for _, name in ipairs({"transport-belt", "assembling-machine-1", "rail", "concrete", "blueprint", "blueprint-book", "copy-paste-tool", "cut-paste-tool", "deconstruction-planner", "upgrade-planner"}) do
     player.clear_cursor()
@@ -63,7 +61,7 @@ script.on_init(function()
   assert(state_for(player.index).lines, "Ghost missing guides")
   assert(guide_for(player, state_for(player.index)).kind == "build-cursor", "Ghost must use snapped build target")
   toggle_hover(player, {x=-0.01,y=3.99})
-  assert(state_for(player.index).anchor, "Prototype-valued ghost must support fixed references")
+  assert(state_for(player.index).anchors["1:-0.5:3.5"], "Prototype-valued ghost must support fixed references")
   update(player)
   toggle_hover(player, {x=-0.01,y=3.99})
   player.clear_cursor()
@@ -95,15 +93,25 @@ script.on_init(function()
   update(player)
   assert(not state_for(player.index).lines, "Grid-only must suppress unsnapped bands")
   test_prefs["cursor-alignment-grid-only"].value = false
-  player.cursor_stack.set_stack{name = "copy-paste-tool", count = 1}
-  toggle_hover(player, {x = -0.01, y = 2.99})
-  assert(guide_for(player, state_for(player.index)).position.x == -0.5, "Selection anchor must snap negative coordinates")
+  toggle_hover(player, {x=-0.01,y=2.99})
+  local surface_index = player.surface.index
+  local key = surface_index .. ":-0.5:2.5"
   test_prefs["cursor-alignment-grid-only"].value = true
   update(player)
-  assert(state_for(player.index).lines, "Grid-only must allow fixed tile references")
-  player.cursor_stack.set_stack{name = "iron-plate", count = 1}
+  assert(state_for(player.index).anchors[key].lines, "Grid filter must allow pins")
+  player.cursor_stack.set_stack{name="iron-plate",count=1}
   update(player)
-  assert(not state_for(player.index).anchor, "Changing tool must clear the fixed reference")
+  assert(state_for(player.index).anchors[key], "Changing tool must preserve references")
+  player.teleport({0,0}, game.surfaces[1])
+  update(player)
+  assert(state_for(player.index).anchors[key] and not state_for(player.index).anchors[key].lines)
+  toggle_hover(player, {x=-0.01,y=2.99})
+  assert(state_for(player.index).anchors["1:-0.5:2.5"], "Same coordinates on different surfaces are independent")
+  toggle_hover(player, {x=-0.01,y=2.99})
+  player.teleport({0,0}, game.surfaces[surface_index])
+  update(player)
+  assert(state_for(player.index).anchors[key].lines, "Returning restores references")
+  toggle_hover(player, {x=-0.01,y=2.99})
   test_prefs["cursor-alignment-grid-only"].value = false
   test_prefs["cursor-alignment-mix"].value = 100
   update(player, true)
