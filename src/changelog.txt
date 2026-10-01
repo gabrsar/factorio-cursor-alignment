@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.1
+Date: 2026-10-01
+  Gui:
+    - Grouped settings into visibility, live guide color, transparency and shortcuts.
+    - Shortcuts now have separate rows; longer explanations moved to tooltips.
+    - Added concise reference removal help and translated section labels in all ten languages.
+---------------------------------------------------------------------------------------------------
 Version: 0.6.0
 Date: 2026-10-01
   Features:

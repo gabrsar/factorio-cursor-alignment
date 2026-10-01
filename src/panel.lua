@@ -16,14 +16,30 @@ local function close(player)
   if frame then frame.destroy() end
 end
 
-local function slider(parent, key, value, maximum)
+local function slider(parent, key, value, maximum, tooltip)
   local row = parent.add{type = "flow", direction = "horizontal"}
-  row.add{type = "label", caption = label(key), tooltip = label(key)}.style.width = 205
+  row.add{type = "label", caption = label(key), tooltip = tooltip and label(tooltip) or label(key)}.style.width = 205
   local input = row.add{type = "slider", name = "ca-" .. key, minimum_value = 0,
     maximum_value = maximum, value = value, value_step = 1,
     tags = {ca = true, key = key}}
   input.style.width = 190
   row.add{type = "label", name = "ca-value", caption = tostring(math.floor(value + 0.5))}.style.width = 45
+end
+
+local function section(parent, key)
+  local group = parent.add{type="flow", direction="vertical"}
+  group.style.top_margin = 8
+  group.style.vertical_spacing = 4
+  local heading = group.add{type="label",caption=label(key)}
+  heading.style.font = "default-bold"
+  group.add{type="line"}.style.horizontally_stretchable = true
+  return group
+end
+
+local function shortcut(parent, action, binding, tooltip)
+  local row = parent.add{type="flow", direction="horizontal"}
+  row.add{type="label",caption=label(action),tooltip=tooltip and label(tooltip)}.style.width = 205
+  row.add{type="label",caption=label(binding)}
 end
 
 function M.open(player)
@@ -34,29 +50,31 @@ function M.open(player)
   local body = f.add{type = "scroll-pane"}
   body.style.maximal_height = 580
   body.style.horizontally_stretchable = true
-  body.add{type = "checkbox", caption = label("enabled"), state = get(player, "enabled"), tags = {ca = true, key = "enabled"}}
-  body.add{type = "label", caption = label("visibility")}
+  local display = section(body, "section-display")
+  display.add{type = "checkbox", caption = label("enabled"), state = get(player, "enabled"), tags = {ca = true, key = "enabled"}}
+  local visibility = display.add{type="flow",direction="horizontal"}
+  visibility.add{type="label",caption=label("visibility")}.style.width=205
   local index = 1
   for i, value in ipairs(modes) do if value == get(player, "mode") then index = i end end
-  body.add{type = "drop-down", items = {label("auto"), label("manual"), label("always")}, selected_index = index, tags = {ca = true, key = "mode"}}
-  local help = body.add{type = "label", caption = label("keys")}
-  help.style.single_line = false; help.style.maximal_width = 475
-  local anchor_help = body.add{type = "label", caption = label("anchor-help")}
-  anchor_help.style.single_line = false; anchor_help.style.maximal_width = 475
-  body.add{type = "line"}
+  visibility.add{type = "drop-down", items = {label("auto"), label("manual"), label("always")}, selected_index = index, tags = {ca = true, key = "mode"}}.style.width=235
+  slider(display, "length", get(player, "length"), 2048)
+  display.add{type="checkbox",caption=label("grid-only"),tooltip=label("grid-help"),state=get(player,"grid-only"),tags={ca=true,key="grid-only"}}
+  local colors = section(body, "section-color")
+  colors.tooltip = label("color-help")
   local c = get(player, "color")
-  slider(body, "red", c.r * 255, 255)
-  slider(body, "green", c.g * 255, 255)
-  slider(body, "blue", c.b * 255, 255)
-  slider(body, "alpha", (c.a or 1) * 100, 100)
-  slider(body, "fill", get(player, "fill"), 100)
-  slider(body, "mix", get(player, "mix"), 100)
-  local mix = body.add{type = "label", caption = label("mix-help")}
-  mix.style.single_line = false; mix.style.maximal_width = 475
-  slider(body, "length", get(player, "length"), 2048)
-  body.add{type = "checkbox", caption = label("grid-only"), state = get(player, "grid-only"), tags = {ca = true, key = "grid-only"}}
-  local note = body.add{type = "label", caption = label("api-note")}
-  note.style.single_line = false; note.style.maximal_width = 475
+  slider(colors, "red", c.r * 255, 255)
+  slider(colors, "green", c.g * 255, 255)
+  slider(colors, "blue", c.b * 255, 255)
+  local transparency = section(body, "section-transparency")
+  slider(transparency, "alpha", (c.a or 1) * 100, 100)
+  slider(transparency, "fill", get(player, "fill"), 100)
+  slider(transparency, "mix", get(player, "mix"), 100, "mix-help")
+  local keys = section(body, "section-shortcuts")
+  shortcut(keys,"action-toggle","shortcut-toggle")
+  shortcut(keys,"action-reference","shortcut-reference","anchor-help")
+  shortcut(keys,"action-panel","shortcut-panel")
+  local hint=keys.add{type="label",caption=label("remove-hint"),tooltip=label("anchor-help")}
+  hint.style.single_line=false; hint.style.maximal_width=475
   local footer = f.add{type = "flow", direction = "horizontal"}
   footer.add{type = "button", name = "ca-reset", caption = label("reset")}
   footer.add{type = "button", name = "ca-close", caption = label("close")}
