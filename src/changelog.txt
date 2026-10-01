@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.7.1
+Date: 2026-10-01
+  Graphics:
+    - Replaced the mod icon with a conveyor loop, tile grid and cyan/amber reference guides.
+  Changes:
+    - Added a ready-to-paste English description for the Factorio mod portal.
+---------------------------------------------------------------------------------------------------
 Version: 0.7.0
 Date: 2026-10-01
   Gui:
