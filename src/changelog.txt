@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.1
+Date: 2026-10-01
+  Bugfixes:
+    - Fixed crash when Ctrl+Shift+S was pressed with a cursor ghost: its name is a LuaItemPrototype, not a string.
+    - Fixed contextual detection and build-cursor snapping for cursor ghosts.
+    - Actual cursor items now take precedence over cursor ghosts.
+  Info:
+    - Added regression tests using real cursor ghosts and prototype-valued names.
+---------------------------------------------------------------------------------------------------
 Version: 0.4.0
 Date: 2026-10-01
   Features:

@@ -60,6 +60,21 @@ script.on_nth_tick(30, function(event)
   script.get_event_handler(defines.events.on_gui_closed){player_index = player.index, element = frame}
   assert(not player.gui.screen["ca-panel"], "Escape must close the panel")
   prefs["cursor-alignment-mode"] = {value="auto"}
+  prefs["cursor-alignment-grid-only"] = {value=false}
+  player.cursor_stack.clear()
+  player.cursor_ghost = {name="transport-belt", quality="normal"}
+  assert(type(player.cursor_ghost.name) ~= "string", "Use the real API ghost representation")
+  update(player)
+  assert(has_build_cursor(player), "Native ghost must activate contextual guides")
+  assert(guide_for(player, state_for(player.index)).kind == "build-cursor")
+  script.get_event_handler("cursor-alignment-hover"){player_index=player.index,cursor_position={x=-0.01,y=3.99}}
+  assert(state_for(player.index).anchor.position.x == -0.5, "Ghost reference must not crash")
+  update(player)
+  script.get_event_handler("cursor-alignment-hover"){player_index=player.index,cursor_position={x=-0.01,y=3.99}}
+  assert(not state_for(player.index).anchor)
+  player.cursor_stack.set_stack{name="iron-plate",count=1}
+  assert(not has_build_cursor(player), "An actual cursor stack must take precedence over ghost")
+  player.cursor_ghost = nil
   player.cursor_stack.set_stack{name="copy-paste-tool", count=1}
   script.get_event_handler("cursor-alignment-hover"){player_index=player.index, cursor_position=player.position}
   game.take_screenshot{player=player, path="guides.png", show_gui=false, force_render=true}

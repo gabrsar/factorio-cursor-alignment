@@ -16,6 +16,14 @@ local function clear(state)
   state.guide_key = nil
 end
 
+local function ghost_prototype(player)
+  local ghost = player.cursor_ghost
+  if not ghost then return nil end
+  -- Reading cursor_ghost returns a prototype/quality pair, not an ItemStack.
+  -- Its name can be a LuaItemPrototype; normalize before indexing or joining.
+  return type(ghost.name) == "string" and prototypes.item[ghost.name] or ghost.name
+end
+
 local function has_build_cursor(player)
   -- Includes blueprints from books and the blueprint library.
   if player.is_cursor_blueprint() then return true end
@@ -25,11 +33,10 @@ local function has_build_cursor(player)
       or stack.is_selection_tool or stack.is_deconstruction_item
       or stack.is_upgrade_item then return true end
     local prototype = stack.prototype
-    if prototype.place_result or prototype.place_as_tile_result or prototype.type == "rail-planner" then return true end
+    return prototype.place_result ~= nil or prototype.place_as_tile_result ~= nil or prototype.type == "rail-planner"
   end
-  local ghost = player.cursor_ghost
-  if ghost then
-    local prototype = prototypes.item[ghost.name]
+  local prototype = ghost_prototype(player)
+  if prototype then
     return prototype ~= nil and
       (prototype.place_result ~= nil or prototype.place_as_tile_result ~= nil or prototype.type == "rail-planner")
   end
@@ -42,9 +49,10 @@ end
 
 local function cursor_key(player)
   local stack = player.cursor_stack
+  local ghost = ghost_prototype(player)
   return tostring(player.surface.index) .. ":" ..
     (stack and stack.valid_for_read and stack.name or
-      player.cursor_ghost and player.cursor_ghost.name or "empty")
+      ghost and ghost.name or "empty")
 end
 
 local function guide_for(player, state)
@@ -54,7 +62,7 @@ local function guide_for(player, state)
   end
   local stack = player.cursor_stack
   local item = stack and stack.valid_for_read and stack.prototype
-  if not item and player.cursor_ghost then item = prototypes.item[player.cursor_ghost.name] end
+  if not item then item = ghost_prototype(player) end
   local entity = item and item.place_result
   if entity and not entity.has_flag("placeable-off-grid")
     and not entity.has_flag("building-direction-8-way")

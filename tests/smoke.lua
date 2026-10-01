@@ -58,9 +58,14 @@ script.on_init(function()
   local g = guide_for(player, state_for(player.index))
   assert(g.kind == "build-cursor" and g.x == 0.5 and g.y == 0, "Even-size tile offset")
   player.clear_cursor()
-  player.cursor_ghost = {name = "transport-belt"}
+  player.cursor_ghost = {name = prototypes.item["transport-belt"]}
   update(player)
   assert(state_for(player.index).lines, "Ghost missing guides")
+  assert(guide_for(player, state_for(player.index)).kind == "build-cursor", "Ghost must use snapped build target")
+  toggle_hover(player, {x=-0.01,y=3.99})
+  assert(state_for(player.index).anchor, "Prototype-valued ghost must support fixed references")
+  update(player)
+  toggle_hover(player, {x=-0.01,y=3.99})
   player.clear_cursor()
   player.cursor_stack.set_stack{name = "iron-plate", count = 1}
   update(player)

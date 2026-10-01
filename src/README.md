@@ -4,7 +4,7 @@ Faixas horizontal e vertical de um tile de largura, com preenchimento translúci
 
 ## Instalação no Windows
 
-1. Copie `cursor-alignment_0.4.0.zip` para `%APPDATA%\Factorio\mods` (sem extrair).
+1. Copie `cursor-alignment_0.4.1.zip` para `%APPDATA%\Factorio\mods` (sem extrair).
 2. Reinicie o Factorio e confirme que **Cursor Alignment** está habilitado em **Mods**.
 3. Abra seu mapa e pegue uma esteira, construção ou blueprint, ou use Ctrl+C / Ctrl+X / Ctrl+V.
 
