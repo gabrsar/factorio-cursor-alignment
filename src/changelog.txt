@@ -1,4 +1,18 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.0
+Date: 2026-10-01
+  Features:
+    - Ctrl+Shift+S can fix a tile-snapped reference while building, copying or selecting.
+    - Added native graphical client integration tests and a make test-client target.
+  Bugfixes:
+    - Fixed settings panel crash caused by a reserved GUI element name.
+    - Reset defaults also clears temporary mute and active references.
+    - Explicit reference activation now works in manual mode and clears temporary mute.
+    - References are released when changing tool or surface; disabled guides ignore input.
+    - Added contextual guide detection for rail planners and rail ghosts.
+  Info:
+    - References are fixed, not continuously snapped. Held Shift still lacks a public API.
+---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 2026-09-30
   Features:

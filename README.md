@@ -10,7 +10,7 @@ Translucent row and column guides for **Factorio 2.1**. Each band is one tile wi
 |---|---|
 | Settings panel | Ctrl+Shift+O, or the top-left button |
 | Toggle guides | Ctrl+Shift+H |
-| Highlight hovered entity until leaving it | Ctrl+Shift+S |
+| Highlight hovered entity / toggle fixed tile reference | Ctrl+Shift+S |
 
 Bindings can be changed in Factorio's controls. Building, ghosts, copy/cut/paste, blueprints and selection tools activate guides automatically in contextual mode. Empty-hand hover does not automatically activate them.
 
@@ -21,6 +21,8 @@ The panel applies changes immediately and stores them per player: RGB color, col
 Normal blending adds a transparent tint. Increasing additive mix retains more background brightness. Default opacity is approximately 16% per band; their intersection is slightly stronger.
 
 Languages: English, Brazilian Portuguese, Spanish, French, German, Italian, Russian, Simplified Chinese, Japanese and Korean. Translation keys are validated; native-speaker improvements are welcome.
+
+With a build/copy/selection tool in hand, **Ctrl+Shift+S** fixes the guides on the cursor tile. Press again to resume cursor following. The reference is released when the tool or surface changes. With an empty hand, the same key highlights the selected entity; over empty ground it fixes a tile reference.
 
 ## API limitations
 
@@ -43,6 +45,7 @@ Edit `src/`. Requires Windows PowerShell 5.1+; tests require an installed Factor
 |---|---|
 | `make build` / `make compile` | Validate locales and package `dist/cursor-alignment_<version>.zip`. Lua needs no compilation. |
 | `make test` / `make check` | Build, load the release ZIP headlessly, run behavior tests. |
+| `make test-client` | Run real GUI/settings/rendering tests in an isolated graphical benchmark and save a panel screenshot. |
 | `make install` | Test, copy to mods, enable the mod, back up replaced files. |
 | `make clean` | Delete generated test files and current ZIP; preserve source, backups and installed mods. |
 | `make rebuild` | Clean, build and test. |
@@ -57,10 +60,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\build.ps1 install
 
 Override default paths using `FACTORIO_EXE` and `FACTORIO_MOD_DIR`, or pass `-Factorio` and `-ModDirectory`. Close the game before installing, then restart. Backups are in `backups/`, preserved by `clean`.
 
-Tests use temporary maps in `work/`, never user saves. They cover engine loading, real inventories/prototypes/render objects, snapping targets and parity, negative coordinates, hover gating, manual/always modes, opacity/mix, surface changes and recovery. Behavior tests use a synthetic player. GUI visual layout, real input and multiplayer require in-game validation. Logs: `work/release-load.log` and `work/behavior.log`.
+Tests use temporary maps in `work/`, never user saves. They cover engine loading, real inventories/prototypes/render objects, snapping targets and parity, negative coordinates, hover gating, manual/always modes, opacity/mix, surface changes and recovery. Behavior tests use a synthetic player. The native client test covers actual GUI creation and settings writes; physical input and multiplayer still require in-game validation. Logs: `work/release-load.log` and `work/behavior.log`.
 
 ## Português
 
-Abra o painel pelo botão no canto superior esquerdo ou **Ctrl+Shift+O**. Ajuste cor, opacidade, mistura aditiva e alcance. **Ctrl+Shift+H** alterna as guias e **Ctrl+Shift+S** destaca a entidade sob o cursor. O modo manual usa alternância: segurar Shift e encaixe contínuo ao copiar/selecionar ainda não são suportados pela API.
+Com uma ferramenta na mão, **Ctrl+Shift+S** fixa uma referência na grade; pressione novamente para liberar. A referência é fixa, sem acompanhamento contínuo. Abra o painel pelo botão no canto superior esquerdo ou **Ctrl+Shift+O**. Ajuste cor, opacidade, mistura aditiva e alcance. **Ctrl+Shift+H** alterna as guias e **Ctrl+Shift+S** destaca a entidade sob o cursor. O modo manual usa alternância: segurar Shift e encaixe contínuo ao copiar/selecionar ainda não são suportados pela API.
 
 MIT license. See [asset provenance](ASSETS.md) for the icon.

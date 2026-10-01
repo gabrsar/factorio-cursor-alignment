@@ -25,13 +25,13 @@ local function has_build_cursor(player)
       or stack.is_selection_tool or stack.is_deconstruction_item
       or stack.is_upgrade_item then return true end
     local prototype = stack.prototype
-    if prototype.place_result or prototype.place_as_tile_result then return true end
+    if prototype.place_result or prototype.place_as_tile_result or prototype.type == "rail-planner" then return true end
   end
   local ghost = player.cursor_ghost
   if ghost then
     local prototype = prototypes.item[ghost.name]
     return prototype ~= nil and
-      (prototype.place_result ~= nil or prototype.place_as_tile_result ~= nil)
+      (prototype.place_result ~= nil or prototype.place_as_tile_result ~= nil or prototype.type == "rail-planner")
   end
   return false
 end
@@ -40,7 +40,18 @@ local function grid_center(position)
   return {x = math.floor(position.x) + 0.5, y = math.floor(position.y) + 0.5}
 end
 
+local function cursor_key(player)
+  local stack = player.cursor_stack
+  return tostring(player.surface.index) .. ":" ..
+    (stack and stack.valid_for_read and stack.name or
+      player.cursor_ghost and player.cursor_ghost.name or "empty")
+end
+
 local function guide_for(player, state)
+  if state.anchor then
+    local p = state.anchor.position
+    return {kind = "position", position = p, key = "anchor:" .. p.x .. ":" .. p.y}
+  end
   local stack = player.cursor_stack
   local item = stack and stack.valid_for_read and stack.prototype
   if not item and player.cursor_ghost then item = prototypes.item[player.cursor_ghost.name] end
@@ -65,13 +76,14 @@ end
 
 local function update(player, rebuild)
   local state = state_for(player.index)
+  if state.anchor and state.anchor.cursor_key ~= cursor_key(player) then state.anchor = nil end
   if state.hover_entity and (not state.hover_entity.valid or state.hover_entity ~= player.selected) then
     state.hover_entity = nil
     state.hover_position = nil
   end
   local prefs = settings.get_player_settings(player)
   local mode = prefs["cursor-alignment-mode"].value
-  local contextual = state.hover_entity ~= nil or has_build_cursor(player)
+  local contextual = state.anchor ~= nil or state.hover_entity ~= nil or has_build_cursor(player)
   local visible = prefs["cursor-alignment-enabled"].value and not state.muted
     and (mode == "always" or prefs["cursor-alignment-always"].value
       or (mode == "manual" and state.manual_active)
@@ -138,7 +150,12 @@ script.on_event({
   defines.events.on_player_controller_changed
 }, function(event)
   local player = game.get_player(event.player_index)
-  if player then panel.ensure_button(player); update(player) end
+  if player then
+    if event.name == defines.events.on_player_changed_surface then
+      state_for(player.index).anchor = nil
+    end
+    panel.ensure_button(player); update(player)
+  end
 end)
 
 -- Covers book/library changes and surface transitions without rebuilding
@@ -179,18 +196,33 @@ end)
 
 local function toggle_hover(player, cursor_position)
   local state = state_for(player.index)
-  if state.hover_entity == player.selected then
+  if has_build_cursor(player) or not player.selected then
+    if state.anchor then state.anchor = nil
+    elseif cursor_position then
+      state.anchor = {position = grid_center(cursor_position), cursor_key = cursor_key(player)}
+    end
+    state.hover_entity = nil; state.hover_position = nil
+  elseif state.hover_entity == player.selected then
     state.hover_entity = nil; state.hover_position = nil
   else
     state.hover_entity = player.selected
     state.hover_position = cursor_position and grid_center(cursor_position) or nil
+  end
+  state.muted = false
+  if settings.get_player_settings(player)["cursor-alignment-mode"].value == "manual" then
+    state.manual_active = state.anchor ~= nil or state.hover_entity ~= nil
   end
   update(player)
 end
 
 script.on_event("cursor-alignment-hover", function(event)
   local player = game.get_player(event.player_index)
-  if player then toggle_hover(player, event.cursor_position) end
+  if not player then return end
+  if not settings.get_player_settings(player)["cursor-alignment-enabled"].value then
+    player.print({"cursor-alignment.enable-in-settings"})
+    return
+  end
+  toggle_hover(player, event.cursor_position)
 end)
 
 script.on_event("cursor-alignment-config", function(event)
@@ -199,7 +231,14 @@ script.on_event("cursor-alignment-config", function(event)
 end)
 script.on_event(defines.events.on_gui_click, function(event)
   local player = game.get_player(event.player_index)
-  if player and panel.click(player, event) then update(player, true) end
+  if not player then return end
+  local result = panel.click(player, event)
+  if result == "reset" then
+    local state = state_for(player.index)
+    state.muted = false; state.manual_active = false
+    state.anchor = nil; state.hover_entity = nil; state.hover_position = nil
+  end
+  if result then update(player, true) end
 end)
 script.on_event({defines.events.on_gui_checked_state_changed,
   defines.events.on_gui_value_changed, defines.events.on_gui_selection_state_changed}, function(event)

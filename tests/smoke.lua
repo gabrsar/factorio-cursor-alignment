@@ -31,7 +31,7 @@ script.on_init(function()
   assert(exact.x == -0.5 and exact.y == 7.5, "Hover input must floor the cursor tile, including negatives")
   toggle_hover(player)
   player.selected = nil
-  for _, name in ipairs({"transport-belt", "assembling-machine-1", "concrete", "blueprint", "blueprint-book", "copy-paste-tool", "cut-paste-tool", "deconstruction-planner", "upgrade-planner"}) do
+  for _, name in ipairs({"transport-belt", "assembling-machine-1", "rail", "concrete", "blueprint", "blueprint-book", "copy-paste-tool", "cut-paste-tool", "deconstruction-planner", "upgrade-planner"}) do
     player.clear_cursor()
     assert(player.cursor_stack.set_stack{name = name, count = 1}, name)
     update(player)
@@ -90,6 +90,16 @@ script.on_init(function()
   update(player)
   assert(not state_for(player.index).lines, "Grid-only must suppress unsnapped bands")
   test_prefs["cursor-alignment-grid-only"].value = false
+  player.cursor_stack.set_stack{name = "copy-paste-tool", count = 1}
+  toggle_hover(player, {x = -0.01, y = 2.99})
+  assert(guide_for(player, state_for(player.index)).position.x == -0.5, "Selection anchor must snap negative coordinates")
+  test_prefs["cursor-alignment-grid-only"].value = true
+  update(player)
+  assert(state_for(player.index).lines, "Grid-only must allow fixed tile references")
+  player.cursor_stack.set_stack{name = "iron-plate", count = 1}
+  update(player)
+  assert(not state_for(player.index).anchor, "Changing tool must clear the fixed reference")
+  test_prefs["cursor-alignment-grid-only"].value = false
   test_prefs["cursor-alignment-mix"].value = 100
   update(player, true)
   assert(state_for(player.index).lines[1].color.a == 0, "Additive mix must preserve background")
@@ -119,7 +129,7 @@ script.on_init(function()
   panel.change(player, {element = {valid=true, tags={ca=true,key="mode"}, selected_index=2}})
   assert(test_prefs["cursor-alignment-mode"].value == "manual")
   panel.change(player, {element = {valid=true, tags={ca=true,key="red"}, slider_value=128,
-    parent={value={caption=""}}}})
+    parent={["ca-value"]={caption=""}}}})
   assert(math.abs(test_prefs["cursor-alignment-color"].value.r - 128/255) < 0.0001)
   panel.click(player, {element={valid=true,name="ca-reset"}})
   assert(test_prefs["cursor-alignment-mode"].value == "auto")

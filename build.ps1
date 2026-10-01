@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('help','build','compile','test','check','install','clean','rebuild','doctor')]
+    [ValidateSet('help','build','compile','test','test-client','check','install','clean','rebuild','doctor')]
     [string]$Task = 'help',
     [string]$Factorio = $env:FACTORIO_EXE,
     [string]$ModDirectory = $env:FACTORIO_MOD_DIR
@@ -106,7 +106,36 @@ function Test-Mod {
     $suffix = Get-Content -LiteralPath (Join-Path $root 'tests/smoke.lua') -Raw
     Write-Utf8 $control ($prefix + "`n" + (Get-Content -LiteralPath $control -Raw) + "`n" + $suffix)
     Invoke-Headless $config $smoke 'behavior' $true
-    Write-Host 'Tests passed. Visual appearance and real multiplayer are not covered.'
+    Write-Host 'Tests passed. Real input and multiplayer are not covered.'
+}
+
+function Test-Client {
+    Build-Mod
+    $config = Get-TestConfig
+    $native = Join-Path $work ('client-' + [guid]::NewGuid().ToString('N'))
+    New-Item -ItemType Directory -Force -Path $native | Out-Null
+    Write-Utf8 (Join-Path $native 'mod-list.json') (@{mods=@(@{name='base';enabled=$true},@{name=$info.name;enabled=$true})} | ConvertTo-Json -Depth 5)
+    [IO.Compression.ZipFile]::ExtractToDirectory($zip, $native)
+    $nativeControl = Join-Path $native "$packageName/control.lua"
+    $nativeTests = Get-Content -LiteralPath (Join-Path $root 'tests/native.lua') -Raw
+    Write-Utf8 $nativeControl ((Get-Content -LiteralPath $nativeControl -Raw) + "`n" + $nativeTests)
+    Invoke-Headless $config $native 'native-gui' $false
+    $clientLog = Join-Path $work 'client.log'
+    $clientError = Join-Path $work 'client.stderr.log'
+    $arguments = @('--config', ('"'+$config+'"'), '--mod-directory', ('"'+$native+'"'),
+      '--benchmark-graphics', ('"'+(Join-Path $work 'native-gui.zip')+'"'),
+      '--benchmark-ticks', '360', '--disable-audio', '--window-size', '1280x960')
+    $previousSteamAppId = $env:SteamAppId
+    try {
+      if ($Factorio -match 'Steam[\\/]steamapps') { $env:SteamAppId = '427520' }
+      $process = Start-Process -FilePath $Factorio -ArgumentList $arguments -PassThru -WindowStyle Hidden -RedirectStandardOutput $clientLog -RedirectStandardError $clientError
+    } finally { $env:SteamAppId = $previousSteamAppId }
+    if (-not $process.WaitForExit(60000)) { $process.Kill(); throw "Client test timed out: $clientLog" }
+    $clientText = [IO.File]::ReadAllText($clientLog) + [IO.File]::ReadAllText($clientError)
+    if ($process.ExitCode -ne 0 -or $clientText -match 'Error:|non-recoverable error' -or $clientText -notmatch 'CURSOR ALIGNMENT TESTS PASSED') {
+      throw "Native client test failed. See $clientLog`n$clientText"
+    }
+    Write-Host 'PASS: native GUI and settings; screenshot: work/script-output/panel.png'
 }
 
 function Install-Mod {
@@ -152,6 +181,7 @@ try {
         'build' { Build-Mod }
         'compile' { Build-Mod }
         'test' { Test-Mod }
+        'test-client' { Test-Client }
         'check' { Test-Mod }
         'install' { Install-Mod }
         'clean' { Clean-Mod }
@@ -165,7 +195,7 @@ try {
             if ($LASTEXITCODE -ne 0) { throw 'Cannot run Factorio.' }
         }
         default {
-            Write-Host 'Targets: build/compile, test/check, install, clean, rebuild, doctor, help'
+            Write-Host 'Targets: build/compile, test/check, test-client, install, clean, rebuild, doctor, help'
             Write-Host 'Usage: make test  OR  .\build.ps1 test'
             Write-Host 'Lua is packaged, not compiled. install runs tests before installing.'
             Write-Host 'Overrides: FACTORIO_EXE, FACTORIO_MOD_DIR; or -Factorio / -ModDirectory.'
