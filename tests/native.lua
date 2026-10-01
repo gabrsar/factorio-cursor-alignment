@@ -38,6 +38,8 @@ script.on_nth_tick(30, function(event)
   script.get_event_handler("cursor-alignment-hover"){player_index=player.index,cursor_position={x=-0.01,y=2.99}}
   script.get_event_handler("cursor-alignment-hover"){player_index=player.index,cursor_position={x=7.1,y=9.9}}
   assert(state.anchors[key] and state.anchors[surface .. ":7.5:9.5"])
+  assert(state.anchors[key].color_index ~= state.anchors[surface .. ":7.5:9.5"].color_index)
+  assert(#state.anchors[key].lines == 6, "Native pin must include root border and center marker")
   player.cursor_stack.set_stack{name="iron-plate",count=1}
   update(player)
   assert(state.anchors[key].lines, "Pins survive tool changes")
@@ -75,6 +77,10 @@ script.on_nth_tick(30, function(event)
   player.cursor_ghost = nil
   player.cursor_stack.set_stack{name="copy-paste-tool", count=1}
   script.get_event_handler("cursor-alignment-hover"){player_index=player.index, cursor_position=player.position}
+  for _, offset in ipairs({{5,0},{-5,0},{0,5}}) do
+    script.get_event_handler("cursor-alignment-hover"){
+      player_index=player.index,cursor_position={x=player.position.x+offset[1],y=player.position.y+offset[2]}}
+  end
   game.take_screenshot{player=player, path="guides.png", show_gui=false, force_render=true}
   panel.open(player)
   game.take_screenshot{player=player, path="panel.png", show_gui=true, force_render=true}

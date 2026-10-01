@@ -1,10 +1,15 @@
 -- Test-only adapters: real inventory/prototypes/rendering, synthetic player.
 local real_rendering = rendering
-local rendering = {draw_line = function(args)
+local function adapt(method, args)
   assert(#args.players == 1 and args.players[1] == 1)
   args.players = nil -- Headless new maps have no real players.
-  return real_rendering.draw_line(args)
-end}
+  return real_rendering[method](args)
+end
+local rendering = {
+  draw_line=function(args) return adapt("draw_line",args) end,
+  draw_rectangle=function(args) return adapt("draw_rectangle",args) end,
+  draw_circle=function(args) return adapt("draw_circle",args) end
+}
 local test_prefs = {
     ["cursor-alignment-enabled"] = {value = true},
     ["cursor-alignment-always"] = {value = false},

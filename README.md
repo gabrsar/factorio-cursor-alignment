@@ -16,13 +16,15 @@ Bindings can be changed in Factorio's controls. Building, ghosts, copy/cut/paste
 
 ## Appearance
 
-The panel applies changes immediately and stores them per player: RGB color, color alpha, fill intensity, additive color mix, reach, contextual/manual/always visibility, and an optional grid-only filter. Options are also in the standard mod settings.
+The panel applies changes immediately and stores them per player: RGB color for live cursor guides, color alpha, fill intensity, additive color mix, reach, contextual/manual/always visibility, and an optional grid-only filter. Options are also in the standard mod settings.
 
 Normal blending adds a transparent tint. Increasing additive mix retains more background brightness. Default opacity is approximately 16% per band; their intersection is slightly stronger.
 
 Languages: English, Brazilian Portuguese, Spanish, French, German, Italian, Russian, Simplified Chinese, Japanese and Korean. Translation keys are validated; native-speaker improvements are welcome.
 
 **Ctrl+Shift+S** adds or removes a fixed reference on the cursor tile. You can keep multiple references. Each stays until you press the shortcut again on its own tile and surface. References survive tool changes, deselection, surface travel and saving/loading. Visibility toggles hide them temporarily; resetting appearance does not delete them. Live cursor guides remain available alongside the fixed references.
+
+Each fixed reference gets its own automatic color, kept until removal. The root tile has a contrasting border and center dot so you can locate where to press Ctrl+Shift+S. Opacity and additive mixing still apply to the bands; the root marker stays easy to see.
 
 ## API limitations
 

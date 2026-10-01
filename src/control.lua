@@ -1,6 +1,32 @@
 -- Cursor targets are resolved locally by the engine (Factorio 2.1+).
 -- No mouse-coordinate polling, entities, or world changes are needed.
 local panel = require("panel")
+local palette = {
+  {r=0.1,g=0.9,b=1}, {r=1,g=0.55,b=0.1}, {r=0.7,g=0.4,b=1},
+  {r=0.3,g=1,b=0.35}, {r=1,g=0.35,b=0.65}, {r=0.25,g=0.55,b=1},
+  {r=1,g=0.9,b=0.2}, {r=1,g=0.3,b=0.2}
+}
+local function assign_color(state, anchor)
+  if anchor.color_index and anchor.tint then return end
+  local used = {}
+  for _, existing in pairs(state.anchors) do
+    if existing.color_index then used[existing.color_index] = true end
+  end
+  local index = 1
+  while used[index] do index = index + 1 end
+  anchor.color_index = index
+  local tint = palette[index]
+  if not tint then
+    -- Golden-angle hues keep additional references from repeating the palette.
+    local hue = ((index - #palette) * 0.61803398875) % 1 * 6
+    local sector = math.floor(hue)
+    local f = hue - sector
+    local p, q, t = 0.25, 1 - 0.75 * f, 0.25 + 0.75 * f
+    local rgb = ({ {1,t,p}, {q,1,p}, {p,1,t}, {p,q,1}, {t,p,1}, {1,p,q} })[sector+1]
+    tint = {r=rgb[1],g=rgb[2],b=rgb[3]}
+  end
+  anchor.tint = {r=tint.r,g=tint.g,b=tint.b}
+end
 local function state_for(index)
   storage.players = storage.players or {}
   storage.players[index] = storage.players[index] or {muted = false}
@@ -20,6 +46,12 @@ local function state_for(index)
     state.anchors[surface .. ":" .. p.x .. ":" .. p.y] = {position=p, surface_index=surface}
   end
   state.hover_entity = nil; state.hover_position = nil
+  local keys = {}
+  for key, anchor in pairs(state.anchors) do
+    if not anchor.tint then keys[#keys+1] = key end
+  end
+  table.sort(keys)
+  for _, key in ipairs(keys) do assign_color(state, state.anchors[key]) end
   return state
 end
 
@@ -92,11 +124,12 @@ local function draw_guide(player, state, guide, rebuild, surface)
   end
   local length = prefs["cursor-alignment-length"].value
   local tint = prefs["cursor-alignment-color"].value
+  local rgb = guide.tint or tint
   local alpha = (tint.a or 1) * prefs["cursor-alignment-fill"].value / 100
   -- Rendering colors are premultiplied: lowering alpha alone makes an
   -- additive-looking bright overlay instead of a subtle transparent fill.
   local mix = prefs["cursor-alignment-mix"].value / 100
-  local color = {r = tint.r * alpha, g = tint.g * alpha, b = tint.b * alpha, a = alpha * (1 - mix)}
+  local color = {r = rgb.r * alpha, g = rgb.g * alpha, b = rgb.b * alpha, a = alpha * (1 - mix)}
   local width = 32 -- 32 pixels = exactly one world tile.
   local function target(x, y)
     if guide.position then
@@ -116,6 +149,24 @@ local function draw_guide(player, state, guide, rebuild, surface)
       render_mode = guide.kind == "build-cursor" and "build-cursor" or "game"
     }
   end
+  if guide.tint then
+    -- Strong root marker with a dark halo; bands retain the configured opacity.
+    for _, outline in ipairs({{width=6,color={r=0,g=0,b=0,a=0.85}},
+      {width=3,color={r=rgb.r*0.9,g=rgb.g*0.9,b=rgb.b*0.9,a=0.9}}}) do
+      state.lines[#state.lines+1] = rendering.draw_rectangle{
+        color=outline.color, width=outline.width, filled=false,
+        left_top=target(-0.46,-0.46), right_bottom=target(0.46,0.46),
+        surface=surface, players={player.index}, draw_on_ground=false
+      }
+    end
+    for _, dot in ipairs({{radius=0.18,color={r=0,g=0,b=0,a=0.9}},
+      {radius=0.12,color={r=rgb.r,g=rgb.g,b=rgb.b,a=1}}}) do
+      state.lines[#state.lines+1] = rendering.draw_circle{
+        color=dot.color, radius=dot.radius, filled=true, target=target(0,0),
+        surface=surface, players={player.index}, draw_on_ground=false
+      }
+    end
+  end
   state.surface = surface.index
   state.guide_key = guide.key
 end
@@ -130,7 +181,7 @@ local function update(player, rebuild)
     local surface = game.surfaces[anchor.surface_index]
     if not surface then clear(anchor); state.anchors[key] = nil
     elseif pins_visible and surface.index == player.surface.index then
-      draw_guide(player, anchor, {kind="position", position=anchor.position, key=key}, rebuild, surface)
+      draw_guide(player, anchor, {kind="position", position=anchor.position, key=key, tint=anchor.tint}, rebuild, surface)
     else clear(anchor) end
   end
   local contextual = has_build_cursor(player)
@@ -226,7 +277,11 @@ local function toggle_hover(player, cursor_position)
   local surface = player.surface.index
   local key = surface .. ":" .. p.x .. ":" .. p.y
   if state.anchors[key] then clear(state.anchors[key]); state.anchors[key] = nil
-  else state.anchors[key] = {position=p, surface_index=surface} end
+  else
+    local anchor = {position=p, surface_index=surface}
+    assign_color(state, anchor)
+    state.anchors[key] = anchor
+  end
   state.muted = false
   if settings.get_player_settings(player)["cursor-alignment-mode"].value == "manual" then
     state.manual_active = true

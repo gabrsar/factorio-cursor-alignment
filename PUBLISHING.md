@@ -9,7 +9,7 @@ Entre com uma conta Factorio.com que tenha uma cópia comprada do jogo. Se a com
 ## Antes do envio
 
 - Rode `make test` e confira o painel numa partida com interface gráfica, incluindo rotação, blueprints e os idiomas desejados. Testes headless passaram, mas não validam o layout visual nem multiplayer real.
-- Use o ZIP gerado em `dist/cursor-alignment_0.5.0.zip`, sem extrair. Ele contém a pasta `cursor-alignment_0.3.0/`, `info.json`, código, traduções, licença, changelog e `thumbnail.png` de 144 × 144.
+- Use o ZIP gerado em `dist/cursor-alignment_0.6.0.zip`, sem extrair. Ele contém a pasta `cursor-alignment_0.3.0/`, `info.json`, código, traduções, licença, changelog e `thumbnail.png` de 144 × 144.
 - O nome técnico é `cursor-alignment`; o portal exige um nome ainda disponível. Se já estiver ocupado, altere o campo `name` e todas as referências relacionadas antes de publicar.
 - Prepare uma ou duas capturas das faixas e do painel para a galeria. Elas ajudam as pessoas a entender o comportamento.
 

@@ -13,6 +13,10 @@ script.on_init(function()
   toggle_hover(player, {x=7.1,y=9.9})
   assert(state.anchors["1:-0.5:3.5"] and state.anchors["1:7.5:9.5"], "Multiple references")
   assert(state.anchors["1:-0.5:3.5"].lines[1].width == 32)
+  assert(#state.anchors["1:-0.5:3.5"].lines == 6, "Root marker must accompany both bands")
+  assert(state.anchors["1:-0.5:3.5"].color_index ~= state.anchors["1:7.5:9.5"].color_index)
+  local first_objects = state.anchors["1:-0.5:3.5"].lines
+  local second_color = state.anchors["1:7.5:9.5"].tint
   local old_id = state.anchors["1:7.5:9.5"].lines[1].id
   update(player)
   assert(state.anchors["1:7.5:9.5"].lines[1].id == old_id)
@@ -21,8 +25,19 @@ script.on_init(function()
   assert(state.anchors["1:-0.5:3.5"], "Selection change must preserve references")
   toggle_hover(player, {x=-0.9,y=3.1})
   assert(not state.anchors["1:-0.5:3.5"] and state.anchors["1:7.5:9.5"], "Remove only the same tile")
+  for _, object in pairs(first_objects) do assert(not object.valid, "Removing a pin must remove its marker") end
+  assert(state.anchors["1:7.5:9.5"].tint.r == second_color.r, "Other references must keep their colors")
   toggle_hover(player, {x=7.9,y=9.1})
   assert(not next(state.anchors))
+  for i=1,12 do toggle_hover(player,{x=i+20,y=10}) end
+  local colors = {}
+  for _, anchor in pairs(state.anchors) do
+    local tint=anchor.tint
+    local signature=tint.r .. ":" .. tint.g .. ":" .. tint.b
+    assert(not colors[signature], "Colors must not repeat beyond the initial palette")
+    colors[signature]=true
+  end
+  for i=1,12 do toggle_hover(player,{x=i+20,y=10}) end
   state.anchor = {position={x=1.5,y=2.5},cursor_key="1:empty"}
   state_for(player.index)
   assert(state.anchors["1:1.5:2.5"] and not state.anchor, "Upgrade must migrate the old fixed reference")

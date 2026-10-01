@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.0
+Date: 2026-10-01
+  Features:
+    - Fixed references receive distinct persistent colors; additional hues extend the initial palette.
+    - Root tiles have a contrasting border and center dot to make individual removal easy.
+    - Existing references receive colors automatically on upgrade.
+  Info:
+    - Band opacity/mixing remain configurable; root markers stay clearly visible.
+    - The configured RGB color applies to live cursor guides.
+---------------------------------------------------------------------------------------------------
 Version: 0.5.0
 Date: 2026-10-01
   Features:
