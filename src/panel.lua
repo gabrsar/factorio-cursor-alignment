@@ -56,7 +56,11 @@ function M.open(player)
   visibility.add{type="label",caption=label("visibility")}.style.width=205
   local index = 1
   for i, value in ipairs(modes) do if value == get(player, "mode") then index = i end end
-  visibility.add{type = "drop-down", items = {label("auto"), label("manual"), label("always")}, selected_index = index, tags = {ca = true, key = "mode"}}.style.width=235
+  local choices=visibility.add{type="flow",direction="vertical",name="ca-modes"}
+  for i, mode in ipairs(modes) do
+    choices.add{type="radiobutton",name="ca-mode-" .. mode,caption=label(mode),
+      state=i==index,tags={ca=true,key="mode",mode=mode}}
+  end
   slider(display, "length", get(player, "length"), 2048)
   display.add{type="checkbox",caption=label("grid-only"),tooltip=label("grid-help"),state=get(player,"grid-only"),tags={ca=true,key="grid-only"}}
   local colors = section(body, "section-color")
@@ -104,7 +108,10 @@ function M.change(player, event)
   if not e or not e.valid or not e.tags.ca then return false end
   local key = e.tags.key
   if key == "enabled" or key == "grid-only" then set(player, key, e.state)
-  elseif key == "mode" then set(player, key, modes[e.selected_index]); set(player, "always", false)
+  elseif key == "mode" then
+    if not e.state then e.state=true; return false end
+    set(player, key, e.tags.mode); set(player, "always", false)
+    for _, choice in pairs(e.parent.children) do choice.state=choice == e end
   else
     local value = math.floor(e.slider_value + 0.5)
     if key == "length" then value = math.max(8, value) end

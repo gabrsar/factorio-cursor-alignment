@@ -1,3 +1,5 @@
 work/
 backups/
 dist/
+__pycache__/
+*.pyc

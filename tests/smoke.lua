@@ -154,7 +154,9 @@ script.on_init(function()
   assert(#player.gui.top.children == 1, "Duplicate config button")
   panel.open(player)
   assert(player.opened == player.gui.screen["ca-panel"])
-  panel.change(player, {element = {valid=true, tags={ca=true,key="mode"}, selected_index=2}})
+  local mode={valid=true,tags={ca=true,key="mode",mode="manual"},state=true}
+  mode.parent={children={mode}}
+  panel.change(player, {element=mode})
   assert(test_prefs["cursor-alignment-mode"].value == "manual")
   panel.change(player, {element = {valid=true, tags={ca=true,key="red"}, slider_value=128,
     parent={["ca-value"]={caption=""}}}})

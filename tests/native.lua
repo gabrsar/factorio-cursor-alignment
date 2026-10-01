@@ -20,9 +20,10 @@ script.on_nth_tick(30, function(event)
   red.slider_value = 128
   script.get_event_handler(defines.events.on_gui_value_changed){player_index = player.index, element = red}
   assert(math.abs(prefs["cursor-alignment-color"].value.r - 128/255) < 0.0001)
-  local mode = assert(find(frame, "mode"))
-  mode.selected_index = 3
-  script.get_event_handler(defines.events.on_gui_selection_state_changed){player_index = player.index, element = mode}
+  local mode = assert(find(frame, "mode")).parent["ca-mode-always"]
+  mode.state = true
+  script.get_event_handler(defines.events.on_gui_checked_state_changed){player_index = player.index, element = mode}
+  for _, choice in pairs(mode.parent.children) do assert(choice.state == (choice == mode), "Visibility modes must be exclusive") end
   assert(state_for(player.index).lines, "Native always mode didn't draw")
   assert(state_for(player.index).lines[1].players[1].index == player.index,
     "Rendering must be scoped to its player")

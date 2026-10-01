@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.7.0
+Date: 2026-10-01
+  Gui:
+    - Replaced the visibility dropdown with three explicit, mutually exclusive radio options.
+  Features:
+    - Added Command+Shift alternative shortcuts for macOS. All bindings remain remappable.
+  Changes:
+    - Unified build tools for Windows, macOS and Linux using Python standard library only.
+    - Added deterministic packaging, SHA-256 checksums, stricter validation and packaging CI.
+    - Reworked user, development and publishing documentation in English.
+---------------------------------------------------------------------------------------------------
 Version: 0.6.1
 Date: 2026-10-01
   Gui:

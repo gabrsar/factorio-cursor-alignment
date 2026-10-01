@@ -1,6 +1,11 @@
 .DEFAULT_GOAL := help
-.PHONY: help build compile test test-client check install clean rebuild doctor
-
-# Native Windows PowerShell; no Python or third-party modules required.
+ifeq ($(OS),Windows_NT)
+PYTHON ?= python
+else
+PYTHON ?= python3
+endif
+.PHONY: help build compile test test-client check install clean rebuild doctor test-build
 help build compile test test-client check install clean rebuild doctor:
-	powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./build.ps1 -Task $@
+	$(PYTHON) tools/build.py $@
+test-build:
+	$(PYTHON) -m unittest discover -s tests -p "test_build.py" -v

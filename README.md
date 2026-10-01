@@ -2,70 +2,86 @@
 
 ![Cursor Alignment](src/thumbnail.png)
 
-Translucent row and column guides for **Factorio 2.1**. Each band is one tile wide. No Space Age dependency.
+One-tile-wide translucent alignment guides for **Factorio 2.1**. Align belts, buildings and selections using the live cursor or persistent colored references. **Space Age is not required.**
 
-## Controls
+## Quick start
 
-| Action | Default binding |
-|---|---|
-| Settings panel | Ctrl+Shift+O, or the top-left button |
-| Toggle guides | Ctrl+Shift+H |
-| Highlight hovered entity / toggle fixed tile reference | Ctrl+Shift+S |
+1. Put `cursor-alignment_<version>.zip` in your Factorio `mods` folder, without extracting it.
+2. Enable Cursor Alignment and restart Factorio.
+3. Pick up a building or use a copy/selection tool to see the guides.
+4. Open the settings panel through the top-left button or its shortcut.
 
-Bindings can be changed in Factorio's controls. Building, ghosts, copy/cut/paste, blueprints and selection tools activate guides automatically in contextual mode. Empty-hand hover does not automatically activate them.
+| Action | Primary default | macOS alternative |
+| --- | --- | --- |
+| Open settings | Control + Shift + O | Command + Shift + O |
+| Toggle visibility | Control + Shift + H | Command + Shift + H |
+| Add/remove reference | Control + Shift + S | Command + Shift + S |
 
-## Appearance
+**All shortcuts are customizable** in **Settings → Controls**. Search for Cursor Alignment or the localized action names. The panel displays your actual bindings. Existing user bindings are preserved on upgrades; assign the new alternative manually if it is absent. Command is a supported Factorio modifier, but these alternatives have not been physically tested on a Mac.
 
-The panel applies changes immediately and stores them per player: RGB color for live cursor guides, color alpha, fill intensity, additive color mix, reach, contextual/manual/always visibility, and an optional grid-only filter. Options are also in the standard mod settings.
+## Persistent references
 
-Normal blending adds a transparent tint. Increasing additive mix retains more background brightness. Default opacity is approximately 16% per band; their intersection is slightly stronger.
+Place your cursor on a tile and use the reference shortcut. Each reference gets its own color and a marked root tile with a contrasting border and center dot. Use the same shortcut **on that marked tile** to remove it.
 
-Languages: English, Brazilian Portuguese, Spanish, French, German, Italian, Russian, Simplified Chinese, Japanese and Korean. Translation keys are validated; native-speaker improvements are welcome.
+Multiple references coexist with live guides. They are saved per player and surface, survive tool changes and save/load, and reappear when you return to their surface. Visibility toggles hide them temporarily; resetting appearance preserves them. References cannot survive deletion of their surface.
 
-**Ctrl+Shift+S** adds or removes a fixed reference on the cursor tile. You can keep multiple references. Each stays until you press the shortcut again on its own tile and surface. References survive tool changes, deselection, surface travel and saving/loading. Visibility toggles hide them temporarily; resetting appearance does not delete them. Live cursor guides remain available alongside the fixed references.
+## Settings
 
-Each fixed reference gets its own automatic color, kept until removal. The root tile has a contrasting border and center dot so you can locate where to press Ctrl+Shift+S. Opacity and additive mixing still apply to the bands; the root marker stays easy to see.
+- **Visibility:** enable guides, choose one mode, set reach and filter unsnapped guides.
+- **Live guide color:** RGB channels; fixed references keep their automatic colors.
+- **Transparency:** color alpha, fill intensity and additive mixing. Hover for explanations.
+- **Shortcuts:** one action per row, with your current bindings and removal instructions.
 
-## API limitations
+Contextual, manual-toggle and always-visible modes are mutually exclusive radio options. Settings apply immediately and are saved per player. Standard per-player mod settings are also available.
 
-- Ordinary buildable entities use the game's snapped build cursor. Even-sized entities receive a half-tile correction to cover a full tile.
-- Fixed references snap the key event cursor position to a tile, including negative coordinates. They stay at that position.
-- Copy/selection tools, blueprints, tile painting and off-grid/diagonal entities still follow the free cursor. Factorio exposes a local render target, not continuously readable mouse coordinates; Lua cannot apply floor or modulo to that target. **Continuous grid stepping for these tools is not implemented.** Grid-only mode hides unsnapped bands.
-- **Hold Shift modes are not implemented.** Factorio 2.1 exposes key activation, but neither key release nor held-key state. Manual mode is a toggle, not a hold detector.
+Default band opacity is approximately 16%; overlapping bands can appear stronger. Additive mixing retains more background brightness. Root markers remain prominent to make references easy to remove. These are visual aids: they do not change placement or create world entities.
 
-References: [render targets](https://lua-api.factorio.com/latest/concepts/ScriptRenderTargetTable.html), [custom inputs](https://lua-api.factorio.com/latest/prototypes/CustomInputPrototype.html), [held-input API request](https://forums.factorio.com/viewtopic.php?t=103051).
+## Compatibility and limitations
 
-## Install
+- Requires Factorio 2.1. Optional expansions are not required.
+- Uses Factorio APIs shared by Windows, macOS and Linux. Game integration and GUI screenshots have been tested on **Windows with Factorio 2.1.20**. Native Mac/Linux gameplay and real multiplayer have not been verified.
+- Ordinary buildings follow the snapped build cursor, with a half-tile correction for even-sized buildings.
+- Blueprints, copy/selection tools, tile painting and off-grid/diagonal placement use the free cursor. **Continuous grid snapping for these tools is not implemented.** Fixed references are snapped but stationary.
+- **Hold-Shift activation is not implemented.** The public API exposes key activation, not a held-key/release interface. Manual mode is a toggle.
+- Empty-hand hover does not activate references automatically. Use the shortcut.
+- Guides target the current world surface, not the strategic map.
 
-Build the ZIP, place it in `%APPDATA%\Factorio\mods` without extracting, enable it and restart Factorio. Alternatively use `make install`. This repository is not a Mod Portal publication.
+References: [render targets](https://lua-api.factorio.com/latest/concepts/ScriptRenderTargetTable.html) and [custom inputs](https://lua-api.factorio.com/latest/prototypes/CustomInputPrototype.html).
 
-## Development on Windows
+## Default installation paths
 
-Edit `src/`. Requires Windows PowerShell 5.1+; tests require an installed Factorio 2.1. No Python dependency.
+| Platform | Mods folder |
+| --- | --- |
+| Windows | `%APPDATA%\Factorio\mods` |
+| macOS | `~/Library/Application Support/factorio/mods` |
+| Linux | `~/.factorio/mods` |
 
-| Target | Action |
-|---|---|
-| `make build` / `make compile` | Validate locales and package `dist/cursor-alignment_<version>.zip`. Lua needs no compilation. |
-| `make test` / `make check` | Build, load the release ZIP headlessly, run behavior tests. |
-| `make test-client` | Run real GUI/settings/rendering tests in an isolated graphical benchmark and save a panel screenshot. |
-| `make install` | Test, copy to mods, enable the mod, back up replaced files. |
-| `make clean` | Delete generated test files and current ZIP; preserve source, backups and installed mods. |
-| `make rebuild` | Clean, build and test. |
-| `make doctor` | Check paths and game version. |
+Portable installations, Flatpak and custom configurations can use different locations. See [Factorio's application directory documentation](https://wiki.factorio.com/User_data_directory). Avoid installing both an extracted source folder and a ZIP of this mod.
 
-Without GNU Make:
+## Build from source
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\build.ps1 test
-powershell -NoProfile -ExecutionPolicy Bypass -File .\build.ps1 install
+Requires **Python 3.9+**, with no third-party modules. Python and Make are development tools, not dependencies for playing with the mod.
+
+```sh
+python3 tools/build.py check
+python3 tools/build.py build
 ```
 
-Override default paths using `FACTORIO_EXE` and `FACTORIO_MOD_DIR`, or pass `-Factorio` and `-ModDirectory`. Close the game before installing, then restart. Backups are in `backups/`, preserved by `clean`.
+On Windows, use `python`, `py -3`, or the compatibility wrapper:
 
-Tests use temporary maps in `work/`, never user saves. They cover engine loading, real inventories/prototypes/render objects, snapping targets and parity, negative coordinates, hover gating, manual/always modes, opacity/mix, surface changes and recovery. Behavior tests use a synthetic player. The native client test covers actual GUI creation and settings writes; physical input and multiplayer still require in-game validation. Logs: `work/release-load.log` and `work/behavior.log`.
+```powershell
+py -3 tools/build.py build
+.\build.ps1 test
+```
 
-## Português
+GNU Make is optional. Targets include `build`, `check`, `test`, `test-build`, `test-client`, `install`, `clean`, `rebuild`, and `doctor`. Use `make PYTHON=python3 build` to choose the interpreter.
 
-**Ctrl+Shift+S** adiciona/remove uma referência no tile do cursor. Você pode manter várias e remover cada uma no próprio tile. A referência é fixa, sem acompanhamento contínuo. Abra o painel pelo botão no canto superior esquerdo ou **Ctrl+Shift+O**. Ajuste cor, opacidade, mistura aditiva e alcance. **Ctrl+Shift+H** alterna as guias e **Ctrl+Shift+S** destaca a entidade sob o cursor. O modo manual usa alternância: segurar Shift e encaixe contínuo ao copiar/selecionar ainda não são suportados pela API.
+See [DEVELOPMENT.md](DEVELOPMENT.md) for testing, path overrides, packaging and installation safety. See [PUBLISHING.md](PUBLISHING.md) for the release checklist and portal upload instructions.
 
-MIT license. See [asset provenance](ASSETS.md) for the icon.
+## Languages and feedback
+
+English, Brazilian Portuguese, Spanish, French, German, Italian, Russian, Simplified Chinese, Japanese and Korean. Native-speaker improvements are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+For bugs, include the Factorio/mod versions, platform, reproduction steps and relevant error from `factorio-current.log`. Redact personal details before posting logs. [Report an issue](https://github.com/gabrsar/factorio-cursor-alignment/issues/new/choose).
+
+MIT license. See [ASSETS.md](ASSETS.md) for icon provenance.

@@ -1,7 +1,19 @@
-Ctrl+Shift+O abre o painel. Ctrl+Shift+H alterna a visibilidade. Ctrl+Shift+S adiciona/remove uma referência fixa no tile do cursor. Você pode manter várias referências. Elas persistem ao trocar de ferramenta, superfície e salvar/carregar. Para remover, use o atalho no próprio tile da referência.
+# Cursor Alignment
 
-Requer Factorio 2.1. Shift segurado e snap contínuo de seleção/cópia não estão implementados.
+Translucent one-tile-wide alignment guides for Factorio 2.1. No Space Age requirement.
 
-Documentação: https://github.com/gabrsar/factorio-cursor-alignment
+- Control+Shift+O: open settings (also available through the top-left button).
+- Control+Shift+H: toggle visibility.
+- Control+Shift+S: add/remove a reference on the cursor tile.
 
-Cada referência ganha uma cor automática e um marcador no tile de origem. Remova-a usando Ctrl+Shift+S nesse tile.
+Command+Shift alternatives are provided for macOS. Customize all bindings in Factorio's controls. The panel shows your configured bindings.
+
+Multiple references have distinct colors and marked root tiles. Remove one by using its shortcut on its marked tile. References persist across tool changes, surface travel and save/load. Resetting appearance preserves them.
+
+RGB affects live guides. Opacity and mixing apply to bands; root markers stay visible. Contextual, manual-toggle and always-visible modes are mutually exclusive.
+
+Hold-Shift activation and continuous copy/selection snapping are not implemented. Fixed references are stationary.
+
+Documentation and bugs: https://github.com/gabrsar/factorio-cursor-alignment
+
+MIT license. Python/Make are only for building from source, not playing with this mod.
