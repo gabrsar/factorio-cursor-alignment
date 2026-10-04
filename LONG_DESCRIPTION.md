@@ -27,13 +27,13 @@ Open the settings panel with **Control + Shift + O** (Command + Shift + O on mac
 
 ## Shortcuts
 
-| Action | Primary default | macOS alternative |
+| Action | Windows / Linux default | macOS default |
 | --- | --- | --- |
 | Open settings | Control + Shift + O | Command + Shift + O |
 | Toggle visibility | Control + Shift + H | Command + Shift + H |
 | Equip alignment tool | Control + Shift + S | Command + Shift + S |
 
-**All shortcuts are customizable in Settings → Controls.** Search for Cursor Alignment or the localized action names. The panel displays your current bindings. Existing custom bindings are preserved when upgrading; assign the Command alternative manually if it is absent.
+**All shortcuts are customizable in Settings → Controls.** Search for Cursor Alignment or the localized action names. The panel displays your current bindings. Existing custom bindings are preserved when upgrading. Each action uses one COMMAND binding, which Factorio maps to Control on Windows/Linux and Command on macOS.
 
 ## Compatibility and current limits
 
@@ -42,7 +42,7 @@ Open the settings panel with **Control + Shift + O** (Command + Shift + O on mac
 - Fixed reference tiles are snapped to the grid. Continuous snapping for blueprints, copy/selection tools, tile painting and off-grid placement is not implemented.
 - Hold-Shift activation is not implemented; manual visibility uses a toggle.
 - Hovering an entity with an empty hand does not automatically create a reference. Use the shortcut.
-- Gameplay and the settings panel have been tested on Windows with Factorio 2.1.20. Native macOS/Linux gameplay and multiplayer have not yet been verified. Command alternatives use Factorio's supported modifier system, but have not been physically tested on a Mac.
+- Gameplay and the settings panel have been tested on Windows with Factorio 2.1.20. Native macOS/Linux gameplay and multiplayer have not yet been verified. Platform-specific shortcut defaults use Factorio's supported COMMAND modifier mapping, but have not been physically tested on a Mac.
 
 ## Languages
 

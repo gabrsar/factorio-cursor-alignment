@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.8.5
+Date: 2026-10-04
+  Changes:
+    - Use a single COMMAND modifier binding per shortcut; Factorio maps it to Control on Windows/Linux.
+    - Removed redundant alternate defaults and corrected shortcut documentation.
+---------------------------------------------------------------------------------------------------
 Version: 0.8.4
 Date: 2026-10-04
   Features:

@@ -11,13 +11,13 @@ One-tile-wide translucent alignment guides for **Factorio 2.1**. Align belts, bu
 3. Pick up a building or use a copy/selection tool to see the guides.
 4. Open the settings panel with Control + Shift + O (Command + Shift + O on macOS).
 
-| Action | Primary default | macOS alternative |
+| Action | Windows / Linux default | macOS default |
 | --- | --- | --- |
 | Open settings | Control + Shift + O | Command + Shift + O |
 | Toggle visibility | Control + Shift + H | Command + Shift + H |
 | Equip alignment tool | Control + Shift + S | Command + Shift + S |
 
-**All shortcuts are customizable** in **Settings → Controls**. Search for Cursor Alignment or the localized action names. The panel displays your actual bindings. Existing user bindings are preserved on upgrades; assign the new alternative manually if it is absent. Command is a supported Factorio modifier, but these alternatives have not been physically tested on a Mac.
+**All shortcuts are customizable** in **Settings → Controls**. Search for Cursor Alignment or the localized action names. The panel displays your actual bindings. Existing user bindings are preserved on upgrades. The mod uses one COMMAND binding per action; Factorio maps it to Control on Windows/Linux and Command on macOS. Native Mac gameplay has not been verified.
 
 ## Persistent references
 
