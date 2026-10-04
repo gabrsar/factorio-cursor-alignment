@@ -15,13 +15,15 @@ One-tile-wide translucent alignment guides for **Factorio 2.1**. Align belts, bu
 | --- | --- | --- |
 | Open settings | Control + Shift + O | Command + Shift + O |
 | Toggle visibility | Control + Shift + H | Command + Shift + H |
-| Add/remove reference | Control + Shift + S | Command + Shift + S |
+| Equip alignment tool | Control + Shift + S | Command + Shift + S |
 
 **All shortcuts are customizable** in **Settings → Controls**. Search for Cursor Alignment or the localized action names. The panel displays your actual bindings. Existing user bindings are preserved on upgrades; assign the new alternative manually if it is absent. Command is a supported Factorio modifier, but these alternatives have not been physically tested on a Mac.
 
 ## Persistent references
 
-Place your cursor on a tile and use the reference shortcut. Each reference gets its own color and a marked root tile with a contrasting border and center dot. Use the same shortcut **on that marked tile** to remove it.
+Click the alignment button in the shortcut bar or press Control + Shift + S to equip the alignment tool. Click tiles to add references; click **a marked root tile** again to remove its reference. The tool stays in your hand across repeated clicks. Exit with **Q** (the remappable clear-cursor control), **Escape** or **right click**. Exiting does not delete references. If the button is hidden, enable it in the shortcut bar's selection menu.
+
+Each reference gets its own color and a marked root tile with a contrasting border and center dot. Dragging a selection creates or removes one reference at the selection's center, snapped to a tile.
 
 Multiple references coexist with live guides. They are saved per player and surface, survive tool changes and save/load, and reappear when you return to their surface. Visibility toggles hide them temporarily; resetting appearance preserves them. References cannot survive deletion of their surface.
 

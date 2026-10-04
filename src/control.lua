@@ -289,6 +289,16 @@ local function toggle_hover(player, cursor_position)
   update(player)
 end
 
+local function equip_alignment_tool(player)
+  if not settings.get_player_settings(player)["cursor-alignment-enabled"].value then
+    player.print({"cursor-alignment.enable-in-settings"})
+    return
+  end
+  if player.clear_cursor() then
+    player.cursor_stack.set_stack{name="cursor-alignment-tool", count=1}
+  end
+end
+
 script.on_event("cursor-alignment-hover", function(event)
   local player = game.get_player(event.player_index)
   if not player then return end
@@ -296,7 +306,28 @@ script.on_event("cursor-alignment-hover", function(event)
     player.print({"cursor-alignment.enable-in-settings"})
     return
   end
-  toggle_hover(player, event.cursor_position)
+  equip_alignment_tool(player)
+end)
+
+script.on_event(defines.events.on_lua_shortcut, function(event)
+  if event.prototype_name ~= "cursor-alignment-tool" then return end
+  local player = game.get_player(event.player_index)
+  if player then equip_alignment_tool(player) end
+end)
+
+script.on_event({defines.events.on_player_selected_area, defines.events.on_player_alt_selected_area}, function(event)
+  if event.item ~= "cursor-alignment-tool" then return end
+  local player = game.get_player(event.player_index)
+  if not player or not settings.get_player_settings(player)["cursor-alignment-enabled"].value then return end
+  -- One reference per gesture, even when the player drags a selection rectangle.
+  local a, b = event.area.left_top, event.area.right_bottom
+  toggle_hover(player, {x=(a.x+b.x)/2, y=(a.y+b.y)/2})
+end)
+
+script.on_event({"cursor-alignment-cancel", "cursor-alignment-escape"}, function(event)
+  local player = game.get_player(event.player_index)
+  if player and player.cursor_stack and player.cursor_stack.valid_for_read
+      and player.cursor_stack.name == "cursor-alignment-tool" then player.clear_cursor() end
 end)
 
 script.on_event("cursor-alignment-config", function(event)

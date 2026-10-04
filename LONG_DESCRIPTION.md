@@ -8,9 +8,11 @@ Horizontal and vertical guide bands help you line up distant belts and buildings
 
 ## Keep multiple colored references
 
-Use the reference shortcut on a tile to add a fixed pair of guides. Each reference receives its own color, with a contrasting border and center dot marking its root tile.
+Click the alignment button in the game's shortcut bar or press **Control + Shift + S** to equip the alignment tool. Click a tile to add a fixed pair of guides. Each reference receives its own color, with a contrasting border and center dot marking its root tile. Enable the button in the shortcut bar's selection menu if it is hidden.
 
-References stay saved when you change tools, switch surfaces or reload your game. To remove one, place the cursor **on its marked root tile** and press the same shortcut again. Toggling visibility hides references temporarily; it does not delete them.
+The tool stays active across repeated clicks. Click **a marked root tile** again to remove that reference. Exit with **Q** (clear cursor), **Escape** or **right click**. Dragging a selection toggles one reference at its center, snapped to a tile.
+
+References stay saved when you change tools, switch surfaces or reload your game. Exiting the tool does not remove them. Toggling visibility hides references temporarily; it does not delete them.
 
 ## Make the guides yours
 
@@ -27,7 +29,7 @@ Open the settings panel using the top-left button or its shortcut. Changes apply
 | --- | --- | --- |
 | Open settings | Control + Shift + O | Command + Shift + O |
 | Toggle visibility | Control + Shift + H | Command + Shift + H |
-| Add/remove reference | Control + Shift + S | Command + Shift + S |
+| Equip alignment tool | Control + Shift + S | Command + Shift + S |
 
 **All shortcuts are customizable in Settings → Controls.** Search for Cursor Alignment or the localized action names. The panel displays your current bindings. Existing custom bindings are preserved when upgrading; assign the Command alternative manually if it is absent.
 

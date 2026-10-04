@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.8.0
+Date: 2026-10-04
+  Features:
+    - Added a shortcut-bar button and a persistent alignment selection tool.
+    - Ctrl+Shift+S now equips the tool; click tiles repeatedly to add/remove references.
+    - Exit with clear cursor (Q by default), Escape or right click without deleting references.
+  Changes:
+    - Updated translated panel help and portal documentation for the new workflow.
+---------------------------------------------------------------------------------------------------
 Version: 0.7.1
 Date: 2026-10-01
   Graphics:
