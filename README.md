@@ -9,7 +9,7 @@ One-tile-wide translucent alignment guides for **Factorio 2.1**. Align belts, bu
 1. Put `cursor-alignment_<version>.zip` in your Factorio `mods` folder, without extracting it.
 2. Enable Cursor Alignment and restart Factorio.
 3. Pick up a building or use a copy/selection tool to see the guides.
-4. Open the settings panel through the top-left button or its shortcut.
+4. Open the settings panel with Control + Shift + O (Command + Shift + O on macOS).
 
 | Action | Primary default | macOS alternative |
 | --- | --- | --- |

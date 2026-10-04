@@ -149,9 +149,10 @@ script.on_init(function()
     return node
   end
   player.gui = {top = gui_node(), screen = gui_node()}
-  panel.ensure_button(player)
-  panel.ensure_button(player)
-  assert(#player.gui.top.children == 1, "Duplicate config button")
+  player.gui.top.add{type="button",name="ca-open"}
+  panel.remove_legacy_button(player)
+  panel.remove_legacy_button(player)
+  assert(not player.gui.top["ca-open"], "Legacy config button must be removed")
   panel.open(player)
   assert(player.opened == player.gui.screen["ca-panel"])
   local mode={valid=true,tags={ca=true,key="mode",mode="manual"},state=true}

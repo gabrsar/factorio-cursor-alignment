@@ -213,7 +213,7 @@ local function initialize()
     clear(state)
     for _, anchor in pairs(state.anchors) do clear(anchor) end
   end
-  for _, player in pairs(game.connected_players) do panel.ensure_button(player); update(player) end
+  for _, player in pairs(game.connected_players) do panel.remove_legacy_button(player); update(player) end
 end
 
 script.on_init(initialize)
@@ -229,7 +229,7 @@ script.on_event({
 }, function(event)
   local player = game.get_player(event.player_index)
   if player then
-    panel.ensure_button(player); update(player)
+    panel.remove_legacy_button(player); update(player)
   end
 end)
 

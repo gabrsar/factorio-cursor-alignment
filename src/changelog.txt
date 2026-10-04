@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.8.1
+Date: 2026-10-04
+  Gui:
+    - Removed the top-left settings button, including existing buttons in upgraded saves.
+    - Settings remain accessible through the customizable Ctrl+Shift+O shortcut.
+---------------------------------------------------------------------------------------------------
 Version: 0.8.0
 Date: 2026-10-04
   Features:

@@ -2,7 +2,7 @@
 
 Translucent one-tile-wide alignment guides for Factorio 2.1. No Space Age requirement.
 
-- Control+Shift+O: open settings (also available through the top-left button).
+- Control+Shift+O: open settings.
 - Control+Shift+H: toggle visibility.
 - Control+Shift+S or the shortcut-bar alignment button: equip the alignment tool. Click tiles to add/remove references. Exit with Q (clear cursor), Escape or right click.
 

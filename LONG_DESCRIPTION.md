@@ -16,7 +16,7 @@ References stay saved when you change tools, switch surfaces or reload your game
 
 ## Make the guides yours
 
-Open the settings panel using the top-left button or its shortcut. Changes apply immediately and are saved per player.
+Open the settings panel with **Control + Shift + O** (Command + Shift + O on macOS). Changes apply immediately and are saved per player.
 
 - Choose between **while building/selecting**, **manual toggle** and **always visible** using three visible radio options.
 - Adjust the guide reach and optionally show only snapped guides.

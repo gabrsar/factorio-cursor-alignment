@@ -5,10 +5,9 @@ local function get(player, key) return prefs(player)["cursor-alignment-" .. key]
 local function set(player, key, value) prefs(player)["cursor-alignment-" .. key] = {value = value} end
 local function label(key) return {"ca-ui." .. key} end
 
-function M.ensure_button(player)
-  if not player.gui.top["ca-open"] then
-    player.gui.top.add{type = "button", name = "ca-open", caption = {"mod-name.cursor-alignment"}, tooltip = label("open")}
-  end
+function M.remove_legacy_button(player)
+  local button = player.gui.top["ca-open"]
+  if button then button.destroy() end
 end
 
 local function close(player)
@@ -92,8 +91,7 @@ end
 function M.click(player, event)
   local e = event.element
   if not e or not e.valid then return false end
-  if e.name == "ca-open" then M.toggle(player)
-  elseif e.name == "ca-close" then close(player)
+  if e.name == "ca-close" then close(player)
   elseif e.name == "ca-reset" then
     for key, value in pairs({enabled = true, mode = "auto", always = false,
       color = {r = 0.1, g = 0.9, b = 1, a = 0.65}, fill = 25, mix = 0, length = 256, ["grid-only"] = false}) do set(player, key, value) end

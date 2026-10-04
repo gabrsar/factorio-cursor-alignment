@@ -5,7 +5,9 @@ script.on_nth_tick(30, function(event)
   local player = assert(game.players[1], "Client test requires a real player")
   player.set_controller{type=defines.controllers.god}
   local prefs = settings.get_player_settings(player)
-  panel.ensure_button(player)
+  player.gui.top.add{type="button",name="ca-open",caption="Legacy"}
+  panel.remove_legacy_button(player)
+  assert(not player.gui.top["ca-open"], "Upgrade must remove legacy settings button")
   panel.open(player)
   assert(player.gui.screen["ca-panel"].valid, "Native settings frame missing")
   local function find(root, key)
