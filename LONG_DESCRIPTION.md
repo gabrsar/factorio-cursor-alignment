@@ -16,6 +16,8 @@ References stay saved when you change tools, switch surfaces or reload your game
 
 ## Make the guides yours
 
+Use **Clear all references** in the settings panel (Control + Shift + O) to remove all your fixed references across every surface at once. Live guides, appearance settings and other players' references are preserved.
+
 Open the settings panel with **Control + Shift + O** (Command + Shift + O on macOS). Changes apply immediately and are saved per player.
 
 - Choose between **while building/selecting**, **manual toggle** and **always visible** using three visible radio options.

@@ -78,6 +78,9 @@ function M.open(player)
   shortcut(keys,"action-panel","shortcut-panel")
   local hint=keys.add{type="label",caption=label("remove-hint"),tooltip=label("anchor-help")}
   hint.style.single_line=false; hint.style.maximal_width=475
+  local cleanup = body.add{type="flow",direction="vertical"}
+  cleanup.style.top_margin=8
+  cleanup.add{type="button",name="ca-clear-all",caption=label("clear-all"),tooltip=label("clear-all-help")}
   local footer = f.add{type = "flow", direction = "horizontal"}
   footer.add{type = "button", name = "ca-reset", caption = label("reset")}
   footer.add{type = "button", name = "ca-close", caption = label("close")}
@@ -91,7 +94,8 @@ end
 function M.click(player, event)
   local e = event.element
   if not e or not e.valid then return false end
-  if e.name == "ca-close" then close(player)
+  if e.name == "ca-clear-all" then return "clear-all"
+  elseif e.name == "ca-close" then close(player)
   elseif e.name == "ca-reset" then
     for key, value in pairs({enabled = true, mode = "auto", always = false,
       color = {r = 0.1, g = 0.9, b = 1, a = 0.65}, fill = 25, mix = 0, length = 256, ["grid-only"] = false}) do set(player, key, value) end

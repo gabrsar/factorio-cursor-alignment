@@ -97,6 +97,24 @@ script.on_nth_tick(30, function(event)
   frame = player.gui.screen["ca-panel"]
   script.get_event_handler(defines.events.on_gui_click){player_index=player.index,element=frame.children[#frame.children]["ca-reset"]}
   assert(state.anchors[surface .. ":7.5:9.5"], "Appearance reset must preserve fixed references")
+  local anchor=state.anchors[surface .. ":7.5:9.5"]
+  local drawings=anchor.lines
+  local other_surface=game.create_surface("alignment-clear-test",{width=32,height=32})
+  state.anchors[other_surface.index .. ":0.5:0.5"]={surface_index=other_surface.index,position={x=0.5,y=0.5}}
+  local other_player=state_for(999)
+  other_player.anchors["test"]={position={x=1,y=1},surface_index=surface}
+  local function clear_button(root)
+    if root.name == "ca-clear-all" then return root end
+    for _, child in pairs(root.children) do local found=clear_button(child); if found then return found end end
+  end
+  local button=assert(clear_button(player.gui.screen["ca-panel"]))
+  script.get_event_handler(defines.events.on_gui_click){player_index=player.index,element=button}
+  assert(next(state.anchors)==nil, "Clear all removes references on every surface")
+  for _, drawing in pairs(drawings) do assert(not drawing.valid, "Clear all destroys rendering") end
+  assert(other_player.anchors.test, "Clear all must preserve other players' references")
+  storage.players[999]=nil
+  script.get_event_handler(defines.events.on_gui_click){player_index=player.index,element=button}
+  assert(next(state.anchors)==nil, "Clearing an empty collection is safe")
   frame = player.gui.screen["ca-panel"]
   script.get_event_handler(defines.events.on_gui_closed){player_index = player.index, element = frame}
   assert(not player.gui.screen["ca-panel"], "Escape must close the panel")

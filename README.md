@@ -29,6 +29,8 @@ Multiple references coexist with live guides. They are saved per player and surf
 
 ## Settings
 
+Use **Clear all references** in the settings panel (Control + Shift + O) to remove all your fixed references across every surface at once. Live guides, appearance settings and other players' references are preserved.
+
 - **Visibility:** enable guides, choose one mode, set reach and filter unsnapped guides.
 - **Live guide color:** RGB channels; fixed references keep their automatic colors.
 - **Transparency:** color alpha, fill intensity and additive mixing. Hover for explanations.

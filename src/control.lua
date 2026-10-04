@@ -351,6 +351,11 @@ script.on_event(defines.events.on_gui_click, function(event)
   local player = game.get_player(event.player_index)
   if not player then return end
   local result = panel.click(player, event)
+  if result == "clear-all" then
+    local state = state_for(player.index)
+    for _, anchor in pairs(state.anchors) do clear(anchor) end
+    state.anchors = {}
+  end
   if result == "reset" then
     local state = state_for(player.index)
     state.muted = false; state.manual_active = false
