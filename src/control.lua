@@ -269,13 +269,14 @@ script.on_event("cursor-alignment-toggle", function(event)
   player.print({state.muted and "cursor-alignment.off" or "cursor-alignment.on"})
 end)
 
-local function toggle_hover(player, cursor_position)
+local function toggle_hover(player, cursor_position, ensure)
   local state = state_for(player.index)
   local position = cursor_position or (player.selected and player.selected.valid and player.selected.position)
   if not position then return end
   local p = grid_center(position)
   local surface = player.surface.index
   local key = surface .. ":" .. p.x .. ":" .. p.y
+  if ensure and state.anchors[key] then return end
   if state.anchors[key] then clear(state.anchors[key]); state.anchors[key] = nil
   else
     local anchor = {position=p, surface_index=surface}
@@ -319,9 +320,21 @@ script.on_event({defines.events.on_player_selected_area, defines.events.on_playe
   if event.item ~= "cursor-alignment-tool" then return end
   local player = game.get_player(event.player_index)
   if not player or not settings.get_player_settings(player)["cursor-alignment-enabled"].value then return end
-  -- One reference per gesture, even when the player drags a selection rectangle.
   local a, b = event.area.left_top, event.area.right_bottom
-  toggle_hover(player, {x=(a.x+b.x)/2, y=(a.y+b.y)/2})
+  local first = grid_center(a)
+  -- Selection bounds are half-open: an integer right/bottom edge belongs
+  -- to the previous tile, not the tile just outside the selected rectangle.
+  local last = {
+    x=b.x == a.x and first.x or math.ceil(b.x)-0.5,
+    y=b.y == a.y and first.y or math.ceil(b.y)-0.5
+  }
+  if first.x == last.x and first.y == last.y then
+    toggle_hover(player, first)
+  else
+    -- Dragging adds the two bounding corners; existing corners are preserved.
+    toggle_hover(player, first, true)
+    toggle_hover(player, last, true)
+  end
 end)
 
 script.on_event({"cursor-alignment-cancel", "cursor-alignment-escape"}, function(event)

@@ -10,7 +10,7 @@ Horizontal and vertical guide bands help you line up distant belts and buildings
 
 Click the alignment button in the game's shortcut bar or press **Control + Shift + S** to equip the alignment tool. Click a tile to add a fixed pair of guides. Each reference receives its own color, with a contrasting border and center dot marking its root tile. Enable the button in the shortcut bar's selection menu if it is hidden.
 
-The tool stays active across repeated clicks. Click **a marked root tile** again to remove that reference. Exit with **Q** (clear cursor), **Escape** or **right click**. Dragging a selection toggles one reference at its center, snapped to a tile.
+The tool stays active across repeated clicks. Click **a marked root tile** again to remove that reference. Exit with **Q** (clear cursor), **Escape** or **right click**. Dragging a selection adds two references at the opposite corner tiles to mark its bounding rectangle. Existing corner references are preserved; a single-tile selection toggles one reference.
 
 References stay saved when you change tools, switch surfaces or reload your game. Exiting the tool does not remove them. Toggling visibility hides references temporarily; it does not delete them.
 

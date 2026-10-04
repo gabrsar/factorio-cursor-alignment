@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.8.2
+Date: 2026-10-04
+  Features:
+    - Dragging the alignment tool now adds references at both opposite corner tiles instead of the midpoint.
+    - Existing corner references are preserved; single-tile selections still toggle one reference.
+  Bugfixes:
+    - Keep corner markers inside the selection when the bottom/right bounds fall on tile edges.
+---------------------------------------------------------------------------------------------------
 Version: 0.8.1
 Date: 2026-10-04
   Gui:

@@ -52,6 +52,24 @@ script.on_nth_tick(30, function(event)
   assert(player.cursor_stack.name == "cursor-alignment-tool", "Tool survives placement")
   select_reference{player_index=player.index,cursor_position={x=40.9,y=40.9}}
   assert(not state.anchors[surface .. ":40.5:40.5"], "Second click removes reference")
+  local rectangle={player_index=player.index,item="cursor-alignment-tool",
+    area={left_top={x=-10,y=-8},right_bottom={x=-5,y=-3}}}
+  local select_area=script.get_event_handler(defines.events.on_player_selected_area)
+  select_area(rectangle)
+  assert(state.anchors[surface .. ":-9.5:-7.5"], "Drag must create top-left corner")
+  assert(state.anchors[surface .. ":-5.5:-3.5"], "Drag must use last included tile")
+  assert(not state.anchors[surface .. ":-7.5:-5.5"], "Drag must not create midpoint")
+  assert(player.cursor_stack.name == "cursor-alignment-tool", "Drag keeps tool active")
+  select_area(rectangle)
+  assert(state.anchors[surface .. ":-9.5:-7.5"] and state.anchors[surface .. ":-5.5:-3.5"],
+    "Repeated drag must preserve existing corners")
+  select_reference{player_index=player.index,cursor_position={x=-9.5,y=-7.5}}
+  select_reference{player_index=player.index,cursor_position={x=-5.5,y=-3.5}}
+  rectangle.area={left_top={x=40,y=40},right_bottom={x=41,y=41}}
+  select_area(rectangle)
+  assert(state.anchors[surface .. ":40.5:40.5"], "Single-tile selection creates only one corner")
+  select_area(rectangle)
+  assert(not state.anchors[surface .. ":40.5:40.5"], "Single-tile selection toggles once")
   script.get_event_handler("cursor-alignment-escape"){player_index=player.index}
   assert(not player.cursor_stack.valid_for_read, "Escape clears tool")
   player.cursor_stack.set_stack{name="iron-plate",count=1}

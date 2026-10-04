@@ -23,7 +23,7 @@ One-tile-wide translucent alignment guides for **Factorio 2.1**. Align belts, bu
 
 Click the alignment button in the shortcut bar or press Control + Shift + S to equip the alignment tool. Click tiles to add references; click **a marked root tile** again to remove its reference. The tool stays in your hand across repeated clicks. Exit with **Q** (the remappable clear-cursor control), **Escape** or **right click**. Exiting does not delete references. If the button is hidden, enable it in the shortcut bar's selection menu.
 
-Each reference gets its own color and a marked root tile with a contrasting border and center dot. Dragging a selection creates or removes one reference at the selection's center, snapped to a tile.
+Each reference gets its own color and a marked root tile with a contrasting border and center dot. Dragging a selection adds two references at its opposite corner tiles, defining the bounding rectangle. Existing corner references are preserved; a single-tile selection toggles one reference.
 
 Multiple references coexist with live guides. They are saved per player and surface, survive tool changes and save/load, and reappear when you return to their surface. Visibility toggles hide them temporarily; resetting appearance preserves them. References cannot survive deletion of their surface.
 

@@ -17,3 +17,5 @@ Hold-Shift activation and continuous copy/selection snapping are not implemented
 Documentation and bugs: https://github.com/gabrsar/factorio-cursor-alignment
 
 MIT license. Python/Make are only for building from source, not playing with this mod.
+
+Drag a selection to add references at its two opposite corner tiles. Existing corner references are preserved. A single-tile selection toggles one reference.
